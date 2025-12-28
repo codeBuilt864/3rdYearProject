@@ -8,6 +8,7 @@ import { ENV } from "./lib/env.js";
 import { connectDB } from "./lib/db.js";
 import { functions, inngest } from "./lib/inngest.js";
 import chatRoutes from "./routes/chatRoute.js";
+import sessionRoutes from "./routes/sessionRoute.js";
 
 const app = express();
 const __dirname = path.resolve();
@@ -20,6 +21,7 @@ app.use("/api/inngest", serve({ client: inngest, functions }));
 app.use("api/chat", chatRoutes);
 
 app.use("api/chat", chatRoutes);
+app.use("/api/sessions", sessionRoutes);
 
 if (ENV.NODE_ENV === "production") {
   app.use(express.static(path.join(__dirname, "../frontend/dist")));
