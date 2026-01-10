@@ -4,6 +4,10 @@ import { Toaster } from "react-hot-toast";
 
 import HomePage from "./pages/HomePage";
 import DashboardPage from "./pages/DashboardPage";
+import AboutPage from "./pages/AboutPage";
+import ProblemsPage from "./pages/ProblemsPage";
+
+
 
 function App() {
   const { isSignedIn, isLoaded } = useUser();
@@ -14,12 +18,18 @@ function App() {
       <Routes>
         <Route
           path="/"
-          element={!isSignedIn ? <HomePage /> : <Navigate to={"/dashboard"} />}
-        />
+          element={!isSignedIn ? <HomePage /> : <Navigate to={"/dashboard"} />} />
         <Route
           path="/dashboard"
-          element={isSignedIn ? <DashboardPage /> : <Navigate to={"/"} />}
-        />
+          element={isSignedIn ? <DashboardPage /> : <Navigate to={"/"} />} />
+
+        <Route path="/problems" element ={<ProblemsPage/>} />
+        <Route path="/about" element ={<AboutPage/>} />
+
+        {/* <Route path="/homepage" element ={<HomePage/>} />
+        <Route path="/dashbord" element ={<DashboardPage/>} /> */}
+
+
       </Routes>
 
       <Toaster toastOptions={{ duration: 3000 }} />
