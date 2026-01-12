@@ -8,8 +8,7 @@ import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import ProblemDescription from "../components/ProblemDescription";
 import CodeEditorPanel from "../components/CodeEditorPanel";
 import OutputPanel from "../components/OutputPanel";
-import { executeCode } from "../../../../../3rd_year_project_code/talent-IQ-master/frontend/src/lib/piston";
-
+import { executeCode } from "../lib/piston";
 import toast from "react-hot-toast";
 
 import confetti from "canvas-confetti";
