@@ -10,6 +10,7 @@ import { functions, inngest } from "./lib/inngest.js";
 import chatRoutes from "./routes/chatRoute.js";
 import sessionRoutes from "./routes/sessionRoute.js";
 
+
 const app = express();
 const __dirname = path.resolve();
 
@@ -18,10 +19,14 @@ app.use(express.json());
 app.use(cors({ origin: ENV.CLIENT_URL, credentials: true }));
 app.use(clerkMiddleware()); //this addss auth field to request object
 app.use("/api/inngest", serve({ client: inngest, functions }));
-app.use("api/chat", chatRoutes);
+app.use("/api/chat", chatRoutes);
 
-app.use("api/chat", chatRoutes);
-app.use("/api/sessions", sessionRoutes);
+app.use("/api/sessions",sessionRoutes);
+
+
+app.get("/health", (req, res) => {
+  res.status(200).json({ msg: "api is up and running" });
+})
 
 if (ENV.NODE_ENV === "production") {
   app.use(express.static(path.join(__dirname, "../frontend/dist")));

@@ -7,6 +7,7 @@ import DashboardPage from "./pages/DashboardPage";
 import AboutPage from "./pages/AboutPage";
 import ProblemsPage from "./pages/ProblemsPage";
 import ProblemPage from "./pages/ProblemPage";
+import SessionPage from "./pages/SessionPage";
 
 
 
@@ -31,19 +32,11 @@ function App() {
         <Route
           path="/Problems"
           element={isSignedIn ? <ProblemsPage /> : <Navigate to={"/"} />} />
-
-        {/* <Route path="/problems" element ={<ProblemsPage/> } />
-
-        <Route path="/about" element ={<AboutPage/>} /> */}
-   
+  
 
         <Route path="/problem/:id" element={isSignedIn? <ProblemPage/> : <Navigate to={"/"}/>}/>
 
-       
-
-        {/* <Route path="/homepage" element ={<HomePage/>} />
-        <Route path="/dashbord" element ={<DashboardPage/>} /> */}
-
+        <Route path="/session/:id" element={isSignedIn? <SessionPage/> : <Navigate to={"/"}/>}/>
 
       </Routes>
 
