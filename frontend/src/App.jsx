@@ -8,6 +8,10 @@ import AboutPage from "./pages/AboutPage";
 import ProblemsPage from "./pages/ProblemsPage";
 import ProblemPage from "./pages/ProblemPage";
 import SessionPage from "./pages/SessionPage";
+import ResumeAnalyzePage from "./pages/ResumeAnalyzePage";
+import MockInterviewPage from "./pages/MockInterviewPage";
+import ITCompaniesPage from "./pages/ITCompaniesPage";
+import JobHuntingStrategiesPage from "./pages/JobHuntingStrategiesPage";
 
 
 
@@ -35,6 +39,14 @@ function App() {
   
 
         <Route path="/problem/:id" element={isSignedIn? <ProblemPage/> : <Navigate to={"/"}/>}/>
+
+        <Route path="/resumeanalyze" element={isSignedIn? <ResumeAnalyzePage/> : <Navigate to={"/"}/>}/>
+
+        <Route path="/mockinterview" element={isSignedIn? <MockInterviewPage/> : <Navigate to={"/"}/>}/>
+
+        <Route path="/companies" element={isSignedIn? <ITCompaniesPage/> : <Navigate to={"/"}/>}/>
+
+        <Route path="/strategies" element={isSignedIn? <JobHuntingStrategiesPage/> : <Navigate to={"/"}/>}/>
 
         <Route path="/session/:id" element={isSignedIn? <SessionPage/> : <Navigate to={"/"}/>}/>
 

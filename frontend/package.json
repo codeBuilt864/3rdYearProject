@@ -19,6 +19,7 @@
     "canvas-confetti": "^1.9.3",
     "date-fns": "^4.1.0",
     "lucide-react": "^0.562.0",
+    "pdfjs-dist": "^5.4.624",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "react-hot-toast": "^2.6.0",

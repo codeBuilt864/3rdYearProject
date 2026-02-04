@@ -1,6 +1,6 @@
 import React from 'react'
 import { Link, useLocation } from 'react-router'
-import { BookOpenIcon, LayoutDashboardIcon, SparklesIcon } from 'lucide-react'
+import { BookOpenIcon, LayoutDashboardIcon, SparklesIcon, FileTextIcon, MicIcon, BriefcaseIcon, TrendingUpIcon } from 'lucide-react'
 import { UserButton } from '@clerk/clerk-react';
 
 
@@ -57,6 +57,65 @@ function Navbar() {
             </div>
           </Link>
 
+          <Link to={"/resumeanalyze"}
+            className={`px-4 py-2.5 rounded-lg transition-all duration-200 
+              ${
+                isActive("/resumeanalyze")
+                  ? "bg-primary text-primary-content"
+                  : "hover:bg-base-200 text-base-content/70 hover:text-base-content"
+              }
+              `}
+          >
+            <div className="flex items-center gap-x-2.5">
+              <FileTextIcon className="size-4" />
+              <span className="font-medium hidden sm:inline">Resume Analyze</span>
+            </div>
+          </Link>
+
+          <Link to={"/mockinterview"}
+            className={`px-4 py-2.5 rounded-lg transition-all duration-200 
+              ${
+                isActive("/mockinterview")
+                  ? "bg-primary text-primary-content"
+                  : "hover:bg-base-200 text-base-content/70 hover:text-base-content"
+              }
+              `}
+          >
+            <div className="flex items-center gap-x-2.5">
+              <MicIcon className="size-4" />
+              <span className="font-medium hidden sm:inline">Mock Interview</span>
+            </div>
+          </Link>
+
+          <Link to={"/companies"}
+            className={`px-4 py-2.5 rounded-lg transition-all duration-200 
+              ${
+                isActive("/companies")
+                  ? "bg-primary text-primary-content"
+                  : "hover:bg-base-200 text-base-content/70 hover:text-base-content"
+              }
+              `}
+          >
+            <div className="flex items-center gap-x-2.5">
+              <BriefcaseIcon className="size-4" />
+              <span className="font-medium hidden sm:inline">Companies</span>
+            </div>
+          </Link>
+
+          <Link to={"/strategies"}
+            className={`px-4 py-2.5 rounded-lg transition-all duration-200 
+              ${
+                isActive("/strategies")
+                  ? "bg-primary text-primary-content"
+                  : "hover:bg-base-200 text-base-content/70 hover:text-base-content"
+              }
+              `}
+          >
+            <div className="flex items-center gap-x-2.5">
+              <TrendingUpIcon className="size-4" />
+              <span className="font-medium hidden sm:inline">Strategies</span>
+            </div>
+          </Link>
 
            <Link
             to={"/dashboard"}
