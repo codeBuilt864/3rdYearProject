@@ -119,7 +119,7 @@ function ProblemPage() {
 
   return (
     
-    <div className="h-screen bg-base-100 flex flex-col">
+    <div className="h-screen bg-gradient-to-br from-[#0F0C29] via-[#1B1443] to-[#3A1C71] flex flex-col">
       <Navbar />
      
 
@@ -135,7 +135,7 @@ function ProblemPage() {
             />
           </Panel>
 
-          <PanelResizeHandle className="w-2 bg-base-300 hover:bg-primary transition-colors cursor-col-resize" />
+          <PanelResizeHandle className="w-2 bg-[#7B5CFF]/40 hover:bg-[#7B5CFF]/80 transition-colors cursor-col-resize" />
 
           {/* right panel- code editor & output */}
           <Panel defaultSize={60} minSize={30}>
@@ -152,7 +152,7 @@ function ProblemPage() {
                 />
               </Panel>
 
-              <PanelResizeHandle className="h-2 bg-base-300 hover:bg-primary transition-colors cursor-row-resize" />
+              <PanelResizeHandle className="h-2 bg-[#7B5CFF]/40 hover:bg-[#7B5CFF]/80 transition-colors cursor-row-resize" />
 
               {/* Bottom panel - Output Panel*/}
 

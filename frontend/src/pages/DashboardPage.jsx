@@ -56,7 +56,7 @@ function DashboardPage() {
 
   return (
    <>
-    <div className="min-h-screen bg-base-300">
+    <div className="min-h-screen bg-gradient-to-br from-[#0F0C29] via-[#1B1443] to-[#3A1C71]">
         <Navbar />
         <WelcomeSection onCreateSession={() => setShowCreateModal(true)} />
 

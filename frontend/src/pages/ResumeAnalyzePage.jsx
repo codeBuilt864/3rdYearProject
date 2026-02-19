@@ -100,7 +100,7 @@ function ResumeAnalyzePage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-blue-950 to-slate-950 flex flex-col">
+    <div className="min-h-screen bg-gradient-to-br from-[#0F0C29] via-[#1B1443] to-[#3A1C71] flex flex-col">
       <Navbar />
 
       <div className="flex-1 py-12 px-4 sm:px-6 lg:px-8">
@@ -116,50 +116,52 @@ function ResumeAnalyzePage() {
                 setIsDragging(true);
               }}
               onDragLeave={() => setIsDragging(false)}
-              className={`border-4 border-dashed rounded-2xl p-16 text-center transition-all cursor-pointer ${
+              className={`relative rounded-3xl p-16 text-center transition-all duration-300 cursor-pointer overflow-hidden group ${
                 isDragging
-                  ? 'border-blue-400 bg-blue-500/20 shadow-2xl shadow-blue-500/30'
-                  : 'border-gray-400 bg-gradient-to-br from-slate-700 to-slate-800 hover:from-slate-600 hover:to-slate-700'
+                  ? 'bg-gradient-to-br from-[#7B5CFF]/40 to-[#A66CFF]/40 border-2 border-[#7B5CFF] shadow-2xl shadow-[#7B5CFF]/40 scale-105'
+                  : 'bg-gradient-to-br from-[#7B5CFF]/10 to-[#A66CFF]/10 border-2 border-[#7B5CFF]/30 hover:border-[#7B5CFF]/60 hover:shadow-xl hover:shadow-[#7B5CFF]/20'
               }`}
             >
-              <div className="text-8xl mb-6">📤</div>
-              <p className="text-white font-bold text-3xl mb-3">Drag & drop your resume</p>
-              <p className="text-gray-300 text-lg mb-6">or click below to browse</p>
-              <input
-                type="file"
-                accept=".txt,.md,.pdf,.doc,.docx"
-                onChange={(e) => handleFileUpload(e.target.files[0])}
-                className="hidden"
-                id="file-upload"
-              />
-              <label
-                htmlFor="file-upload"
-                className="inline-block px-10 py-4 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white rounded-xl font-bold text-lg cursor-pointer transition-all shadow-xl hover:shadow-2xl"
-              >
-                📁 Choose File
-              </label>
-              <div className="text-gray-400 text-base mt-8 space-y-2">
-                <p className="font-semibold">Supported formats:</p>
-                <p>.PDF • .DOC • .DOCX • .TXT • .MD</p>
+              <div className="absolute inset-0 bg-gradient-to-br from-[#7B5CFF]/5 to-[#A66CFF]/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              <div className="relative z-10">
+                <div className="text-7xl mb-6 animate-bounce">📄</div>
+                <p className="text-white font-black text-3xl mb-3">Drag your resume here</p>
+                <p className="text-white/80 text-lg mb-8">Drop to upload or click below</p>
+                <input
+                  type="file"
+                  accept=".txt,.md,.pdf,.doc,.docx"
+                  onChange={(e) => handleFileUpload(e.target.files[0])}
+                  className="hidden"
+                  id="file-upload"
+                />
+                <label
+                  htmlFor="file-upload"
+                  className="inline-block px-8 py-3 bg-gradient-to-r from-[#7B5CFF] to-[#A66CFF] hover:from-[#8A6FFF] hover:to-[#B380FF] text-white rounded-xl font-bold text-base cursor-pointer transition-all shadow-lg hover:shadow-xl hover:scale-105 duration-300"
+                >
+                  Choose File
+                </label>
+                <div className="text-white/60 text-sm mt-6 space-y-1">
+                  <p className="font-semibold">Supported: PDF • DOC • DOCX • TXT • MD</p>
+                </div>
               </div>
             </div>
 
             {resumeFile && (
-              <div className={`mt-8 p-6 rounded-xl border-2 flex items-start gap-4 text-lg ${
+              <div className={`mt-8 p-6 rounded-2xl border backdrop-blur-md transition-all duration-300 flex items-start gap-4 ${
                 resumeFile.status === 'error'
-                  ? 'bg-red-900/30 border-red-500'
+                  ? 'bg-red-500/10 border-red-500/50 text-red-400'
                   : resumeFile.status === 'done'
-                  ? 'bg-green-900/30 border-green-500'
-                  : 'bg-blue-900/30 border-blue-500'
+                  ? 'bg-green-500/10 border-green-500/50 text-green-400'
+                  : 'bg-[#7B5CFF]/10 border-[#7B5CFF]/50 text-[#A66CFF]'
               }`}>
-                <div className="text-4xl">
+                <div className="text-3xl pt-1">
                   {resumeFile.status === 'error' ? '❌' : resumeFile.status === 'done' ? '✅' : '⏳'}
                 </div>
                 <div className="flex-1">
-                  <p className="text-white font-bold text-xl">{resumeFile.name}</p>
-                  {resumeFile.status === 'extracting' && <p className="text-blue-300 text-base mt-1">Extracting text from PDF...</p>}
-                  {resumeFile.status === 'reading' && <p className="text-blue-300 text-base mt-1">Reading file...</p>}
-                  {resumeFile.status === 'done' && <p className="text-green-300 text-base mt-1">✨ Ready to continue!</p>}
+                  <p className="text-white font-bold text-lg">{resumeFile.name}</p>
+                  {resumeFile.status === 'extracting' && <p className="text-[#A66CFF] text-sm mt-1">Extracting text from PDF...</p>}
+                  {resumeFile.status === 'reading' && <p className="text-[#A66CFF] text-sm mt-1">Reading file...</p>}
+                  {resumeFile.status === 'done' && <p className="text-green-300 text-sm mt-1">Ready to continue!</p>}
                 </div>
               </div>
             )}
@@ -191,8 +193,8 @@ function ResumeAnalyzePage() {
             <textarea
               value={jobDescription}
               onChange={(e) => setJobDescription(e.target.value)}
-              placeholder="Paste the job description here to get tailored suggestions on skill relevance..."
-              className="w-full h-64 p-6 bg-slate-700/50 text-white rounded-xl border-2 border-slate-600 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/30 resize-none text-lg leading-relaxed font-medium"
+              placeholder="Paste the job description here to get tailored suggestions..."
+              className="w-full h-64 p-6 bg-gradient-to-br from-[#7B5CFF]/10 to-[#A66CFF]/10 text-white rounded-2xl border border-[#7B5CFF]/30 focus:border-[#7B5CFF]/60 focus:outline-none focus:ring-2 focus:ring-[#7B5CFF]/30 transition-all resize-none text-base leading-relaxed placeholder:text-white/50"
             />
             <p className="text-gray-300 text-base mt-4 flex items-center gap-2">
               <span>💡</span> Adding a job description helps us match your skills with what employers need.
@@ -304,20 +306,20 @@ function ResumeAnalyzePage() {
             </div>
 
             {/* Overall Score - Large and Prominent */}
-            <div className="bg-gradient-to-br from-blue-600/30 via-purple-600/30 to-pink-600/30 border-3 border-blue-500/50 rounded-2xl p-10 mb-10 shadow-2xl">
-              <div className="flex items-center justify-between">
+            <div className="bg-gradient-to-br from-[#7B5CFF]/30 via-[#A66CFF]/30 to-[#7B5CFF]/20 backdrop-blur-md border border-[#7B5CFF]/40 rounded-3xl p-12 mb-10 shadow-2xl shadow-[#7B5CFF]/20 hover:shadow-2xl hover:shadow-[#7B5CFF]/30 transition-all duration-300">
+              <div className="flex items-center justify-between gap-8">
                 <div>
-                  <p className="text-gray-300 text-sm font-bold tracking-widest mb-2">OVERALL SCORE</p>
-                  <p className="text-gray-400 text-lg">Based on 5 comprehensive dimensions</p>
+                  <p className="text-white/70 text-sm font-bold tracking-widest mb-2">OVERALL SCORE</p>
+                  <p className="text-white/60 text-base">Comprehensive analysis of 5 dimensions</p>
                 </div>
-                <div className={`text-9xl font-black ${getScoreColor(analysis.overallScore)}`}>
+                <div className={`text-8xl font-black bg-gradient-to-br from-[#7B5CFF] to-[#A66CFF] bg-clip-text text-transparent`}>
                   {analysis.overallScore}
                 </div>
               </div>
             </div>
 
             {/* Score Circles */}
-            <div className="bg-slate-800/80 border-2 border-slate-700 rounded-2xl p-10 mb-10">
+            <div className="bg-gradient-to-br from-[#7B5CFF]/10 to-[#A66CFF]/10 backdrop-blur-md border border-[#7B5CFF]/30 rounded-3xl p-10 mb-10 shadow-lg hover:shadow-xl hover:shadow-[#7B5CFF]/20 transition-all duration-300">
               <h3 className="text-3xl font-bold text-white mb-8">📊 Detailed Score Breakdown</h3>
               <div className="grid grid-cols-5 gap-6 mb-10">
                 <ScoreCircle label="ATS Match" score={analysis.scores.ats} size={120} />
@@ -330,28 +332,28 @@ function ResumeAnalyzePage() {
             </div>
 
             {/* Suggestions */}
-            <div className="bg-slate-800/80 border-2 border-slate-700 rounded-2xl p-10 mb-10">
+            <div className="bg-gradient-to-br from-[#7B5CFF]/10 to-[#A66CFF]/10 backdrop-blur-md border border-[#7B5CFF]/30 rounded-3xl p-10 mb-10 shadow-lg hover:shadow-xl hover:shadow-[#7B5CFF]/20 transition-all duration-300">
               <h3 className="text-3xl font-bold text-white mb-6">💡 Key Recommendations</h3>
               {analysis.suggestions && analysis.suggestions.length > 0 ? (
                 <div className="space-y-4">
                   {analysis.suggestions.map((suggestion, i) => (
                     <div
                       key={i}
-                      className="p-5 bg-amber-900/40 border-l-4 border-amber-500 rounded-lg text-amber-100 text-base font-medium leading-relaxed"
+                      className="p-5 bg-gradient-to-r from-amber-500/20 to-orange-500/10 border-l-4 border-amber-500/60 rounded-xl text-amber-100 text-base leading-relaxed hover:from-amber-500/30 transition-all duration-300"
                     >
                       {suggestion}
                     </div>
                   ))}
                 </div>
               ) : (
-                <div className="p-6 bg-green-900/40 border-2 border-green-500 rounded-xl text-green-100 text-lg font-semibold">
-                  🎉 Excellent work! Your resume is well-optimized. Keep it up!
+                <div className="p-6 bg-gradient-to-r from-green-500/20 to-emerald-500/10 border border-green-500/40 rounded-xl text-green-100 text-lg font-semibold">
+                  🎉 Excellent! Your resume is well-optimized. Keep it up!
                 </div>
               )}
             </div>
 
             {/* Details Accordion */}
-            <div className="bg-slate-800/80 border-2 border-slate-700 rounded-2xl p-10 mb-10">
+            <div className="bg-gradient-to-br from-[#7B5CFF]/10 to-[#A66CFF]/10 backdrop-blur-md border border-[#7B5CFF]/30 rounded-3xl p-10 mb-10 shadow-lg hover:shadow-xl hover:shadow-[#7B5CFF]/20 transition-all duration-300">
               <h3 className="text-3xl font-bold text-white mb-6">📑 Detailed Information</h3>
               <Accordion
                 items={[
@@ -374,7 +376,7 @@ function ResumeAnalyzePage() {
                             {analysis.skills.map((skill, i) => (
                               <span
                                 key={i}
-                                className="px-4 py-2 bg-blue-500/40 text-blue-200 rounded-full text-base font-semibold border border-blue-500/60"
+                                className="px-4 py-2 bg-[#7B5CFF]/40 text-white rounded-full text-base font-semibold border border-[#7B5CFF]/60"
                               >
                                 {skill}
                               </span>
@@ -418,7 +420,7 @@ function ResumeAnalyzePage() {
               </button>
               <a
                 href="/"
-                className="px-10 py-4 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white rounded-xl font-bold text-lg transition-all shadow-lg"
+                className="px-10 py-4 bg-gradient-to-r from-[#7B5CFF] to-[#A66CFF] hover:from-[#8A6FFF] hover:to-[#B380FF] text-white rounded-xl font-bold text-lg transition-all shadow-lg"
               >
                 🏠 Back to Dashboard
               </a>

@@ -231,15 +231,15 @@ function JobHuntingStrategiesPage() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-base-100 flex flex-col">
+    <div className="min-h-screen bg-gradient-to-br from-[#0F0C29] via-[#1B1443] to-[#3A1C71] flex flex-col">
       <Navbar />
-      <div className="max-w-7xl mx-auto p-8">
-        <header className="mb-8">
-          <h1 className="text-4xl font-extrabold mb-2">Practical Job Hunting Strategies</h1>
-          <p className="text-lg text-base-content/80">Step-by-step, image-backed guides to help you land interviews faster and get offers from recruiters.</p>
+      <div className="max-w-7xl mx-auto p-8 w-full">
+        <header className="mb-12">
+          <h1 className="text-5xl font-black mb-3 bg-gradient-to-r from-[#7B5CFF] via-[#A66CFF] to-[#7B5CFF] bg-clip-text text-transparent">Practical Job Hunting Strategies</h1>
+          <p className="text-lg text-white/80 max-w-3xl">Step-by-step, practical guides to help you land interviews faster and get offers from top recruiters.</p>
         </header>
 
-        <section className="grid grid-cols-1 gap-6">
+        <section className="grid grid-cols-1 gap-8">
           {cards.map((c) => (
             <StrategyCard
               key={c.id}
@@ -252,7 +252,7 @@ function JobHuntingStrategiesPage() {
             />
           ))}
 
-          <div className="mt-6">
+          <div className="mt-8">
             <Templates />
           </div>
         </section>

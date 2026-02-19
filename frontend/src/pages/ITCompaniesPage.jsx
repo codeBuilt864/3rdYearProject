@@ -203,36 +203,36 @@ function ITCompaniesPage() {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-base-100 to-base-200 flex flex-col">
+    <div className="min-h-screen bg-gradient-to-br from-[#0F0C29] via-[#1B1443] to-[#3A1C71] flex flex-col">
       <Navbar />
 
       <div className="flex-1 flex flex-col">
         {/* Header Section */}
-        <div className="bg-gradient-to-r from-primary to-secondary text-primary-content p-8">
-          <h1 className="text-4xl font-bold mb-2">Sri Lanka IT Companies</h1>
+        <div className="bg-gradient-to-r from-[#7B5CFF]/40 to-[#A66CFF]/40 backdrop-blur-md border-b border-[#7B5CFF]/30 text-white p-8">
+          <h1 className="text-4xl font-bold mb-2 bg-gradient-to-r from-[#7B5CFF] to-[#A66CFF] bg-clip-text text-transparent">Sri Lanka IT Companies</h1>
           <p className="text-lg opacity-90">
             Discover leading IT companies, their opportunities, and connect with industry leaders
           </p>
         </div>
 
         {/* Search and Filter Section */}
-        <div className="bg-base-100 border-b border-base-300 p-6 sticky top-0 z-10 shadow-sm">
+        <div className="bg-gradient-to-br from-[#7B5CFF]/5 to-[#A66CFF]/5 backdrop-blur-sm border-b border-[#7B5CFF]/30 p-6 sticky top-0 z-10 shadow-sm">
           <div className="max-w-7xl mx-auto space-y-4">
             <input
               type="text"
               placeholder="🔍 Search companies by name or industry..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full input input-bordered bg-base-200 focus:bg-base-100 focus:outline-none"
+              className="w-full px-4 py-3 bg-gradient-to-br from-[#7B5CFF]/10 to-[#A66CFF]/10 border border-[#7B5CFF]/30 rounded-xl text-white placeholder-white/50 focus:outline-none focus:border-[#7B5CFF]/60 focus:ring-2 focus:ring-[#7B5CFF]/20 transition-all"
             />
             
             <div className="flex flex-wrap gap-2">
               <button
                 onClick={() => setFilterSpecialty("All")}
-                className={`btn btn-sm ${
+                className={`px-4 py-2 rounded-lg font-semibold transition-all duration-300 ${
                   filterSpecialty === "All"
-                    ? "btn-primary"
-                    : "btn-ghost btn-outline"
+                    ? "bg-gradient-to-r from-[#7B5CFF] to-[#A66CFF] text-white ring-1 ring-[#7B5CFF]/20"
+                    : "bg-gradient-to-br from-[#7B5CFF]/20 to-[#A66CFF]/20 border border-[#7B5CFF]/30 text-white hover:border-[#7B5CFF]/60"
                 }`}
               >
                 All Specialties
@@ -241,18 +241,18 @@ function ITCompaniesPage() {
                 <button
                   key={specialty}
                   onClick={() => setFilterSpecialty(specialty)}
-                  className={`btn btn-sm ${
-                    filterSpecialty === specialty
-                      ? "btn-primary"
-                      : "btn-ghost btn-outline"
-                  }`}
+                  className={`px-4 py-2 rounded-lg font-semibold transition-all duration-300 ${
+                      filterSpecialty === specialty
+                        ? "bg-gradient-to-r from-[#7B5CFF] to-[#A66CFF] text-white ring-1 ring-[#7B5CFF]/20"
+                        : "bg-gradient-to-br from-[#7B5CFF]/20 to-[#A66CFF]/20 border border-[#7B5CFF]/30 text-white hover:border-[#7B5CFF]/60"
+                    }`}
                 >
                   {specialty}
                 </button>
               ))}
             </div>
 
-            <p className="text-sm text-base-content/60">
+            <p className="text-sm text-white/60">
               Showing {filteredCompanies.length} of {companies.length} companies
             </p>
           </div>
@@ -266,17 +266,17 @@ function ITCompaniesPage() {
                 {/* Left Column - Companies List */}
                 <div className="lg:col-span-1">
                   <div className="space-y-3 sticky top-24">
-                    <h2 className="text-2xl font-bold text-base-content mb-4">
+                    <h2 className="text-2xl font-bold text-white mb-4 bg-gradient-to-r from-[#7B5CFF] to-[#A66CFF] bg-clip-text">
                       Companies List
                     </h2>
                     {filteredCompanies.map((company) => (
                       <div
                         key={company.id}
                         onClick={() => setSelectedCompany(company)}
-                        className={`p-4 rounded-lg cursor-pointer transition-all transform hover:scale-102 ${
+                        className={`p-4 rounded-xl cursor-pointer transition-all transform ${
                           selectedCompany?.id === company.id
-                            ? "bg-primary text-primary-content shadow-lg scale-105"
-                            : "bg-base-100 hover:bg-base-200 border border-base-300"
+                            ? "bg-gradient-to-br from-[#7B5CFF]/60 to-[#A66CFF]/60 backdrop-blur-md text-white shadow-lg shadow-[#7B5CFF]/40 scale-105 border border-[#7B5CFF]/80"
+                            : "bg-gradient-to-br from-[#7B5CFF]/20 to-[#A66CFF]/20 backdrop-blur-md border border-[#7B5CFF]/30 text-white hover:border-[#7B5CFF]/60 hover:shadow-lg hover:shadow-[#7B5CFF]/20"
                         }`}
                       >
                         <div className="flex items-start gap-3">
@@ -300,22 +300,22 @@ function ITCompaniesPage() {
                   {selectedCompany && (
                     <div className="space-y-6">
                       {/* Company Header Card */}
-                      <div className="bg-gradient-to-br from-primary/10 to-secondary/10 border border-primary/20 rounded-xl p-6">
+                      <div className="bg-gradient-to-br from-[#7B5CFF]/40 to-[#A66CFF]/40 backdrop-blur-md border border-[#7B5CFF]/50 rounded-3xl p-6 transition-all">
                         <div className="flex items-start justify-between mb-4">
                           <div>
                             <div className="text-5xl mb-3">{selectedCompany.logo}</div>
-                            <h2 className="text-4xl font-bold text-base-content">
+                            <h2 className="text-4xl font-bold text-white drop-shadow-sm">
                               {selectedCompany.name}
                             </h2>
-                            <p className="text-lg text-base-content/70 mt-2">
+                            <p className="text-lg text-white/70 mt-2">
                               {selectedCompany.industry}
                             </p>
                           </div>
                           <div className="text-right">
-                            <div className="badge badge-lg badge-primary mb-2">
+                            <div className="inline-block px-4 py-2 bg-gradient-to-r from-[#7B5CFF] to-[#A66CFF] text-white text-sm font-bold rounded-lg mb-2">
                               Founded {selectedCompany.founded}
                             </div>
-                            <div className="badge badge-lg badge-secondary">
+                            <div className="block px-4 py-2 bg-gradient-to-r from-blue-500 to-[#7B5CFF] text-white text-sm font-bold rounded-lg">
                               {selectedCompany.employees}
                             </div>
                           </div>
@@ -323,23 +323,23 @@ function ITCompaniesPage() {
                       </div>
 
                       {/* Description */}
-                      <div className="bg-base-100 rounded-lg p-6 border border-base-300">
-                        <h3 className="text-xl font-bold mb-3 text-base-content">
+                      <div className="bg-gradient-to-br from-[#7B5CFF]/10 to-[#A66CFF]/10 backdrop-blur-md rounded-3xl p-6 border border-[#7B5CFF]/30 shadow-lg hover:shadow-xl hover:shadow-[#7B5CFF]/20 transition-all">
+                        <h3 className="text-xl font-bold mb-3 text-white">
                           About
                         </h3>
-                        <p className="text-base-content/80 leading-relaxed">
+                        <p className="text-white/80 leading-relaxed">
                           {selectedCompany.description}
                         </p>
                       </div>
 
                       {/* Specialties */}
-                      <div className="bg-base-100 rounded-lg p-6 border border-base-300">
-                        <h3 className="text-xl font-bold mb-4 flex items-center gap-2 text-base-content">
+                      <div className="bg-gradient-to-br from-[#7B5CFF]/10 to-[#A66CFF]/10 backdrop-blur-md rounded-3xl p-6 border border-[#7B5CFF]/30 shadow-lg hover:shadow-xl hover:shadow-[#7B5CFF]/20 transition-all">
+                        <h3 className="text-xl font-bold mb-4 flex items-center gap-2 text-white">
                           <Briefcase size={20} /> Specialties
                         </h3>
                         <div className="flex flex-wrap gap-2">
                           {selectedCompany.specialties.map((specialty, idx) => (
-                            <div key={idx} className="badge badge-outline badge-lg">
+                            <div key={idx} className="px-3 py-1 bg-gradient-to-r from-[#7B5CFF]/30 to-[#A66CFF]/30 border border-[#7B5CFF]/50 text-white rounded-lg text-sm font-semibold">
                               {specialty}
                             </div>
                           ))}
@@ -347,20 +347,20 @@ function ITCompaniesPage() {
                       </div>
 
                       {/* Contact Information */}
-                      <div className="bg-base-100 rounded-lg p-6 border border-base-300">
-                        <h3 className="text-xl font-bold mb-4 flex items-center gap-2 text-base-content">
+                      <div className="bg-gradient-to-br from-[#7B5CFF]/10 to-[#A66CFF]/10 backdrop-blur-md rounded-3xl p-6 border border-[#7B5CFF]/30 shadow-lg hover:shadow-xl hover:shadow-[#7B5CFF]/20 transition-all">
+                        <h3 className="text-xl font-bold mb-4 flex items-center gap-2 text-white">
                           <MapPin size={20} /> Contact Information
                         </h3>
                         <div className="space-y-3">
                           <div className="flex items-center gap-3">
-                            <Globe className="text-primary" size={20} />
+                            <Globe className="text-[#7B5CFF]" size={20} />
                             <div>
-                              <p className="text-sm text-base-content/60">Website</p>
+                              <p className="text-sm text-white/60">Website</p>
                               <a
                                 href={`https://${selectedCompany.website}`}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="text-primary font-semibold hover:underline"
+                                className="text-[#7B5CFF] font-semibold hover:text-[#A66CFF] transition-colors"
                               >
                                 {selectedCompany.website}
                               </a>
@@ -368,12 +368,12 @@ function ITCompaniesPage() {
                           </div>
                           
                           <div className="flex items-center gap-3">
-                            <Mail className="text-primary" size={20} />
+                            <Mail className="text-[#7B5CFF]" size={20} />
                             <div>
-                              <p className="text-sm text-base-content/60">Email</p>
+                              <p className="text-sm text-white/60">Email</p>
                               <a
                                 href={`mailto:${selectedCompany.email}`}
-                                className="text-primary font-semibold hover:underline"
+                                className="text-[#7B5CFF] font-semibold hover:text-[#A66CFF] transition-colors"
                               >
                                 {selectedCompany.email}
                               </a>
@@ -381,12 +381,12 @@ function ITCompaniesPage() {
                           </div>
                           
                           <div className="flex items-center gap-3">
-                            <Phone className="text-primary" size={20} />
+                            <Phone className="text-[#7B5CFF]" size={20} />
                             <div>
-                              <p className="text-sm text-base-content/60">Phone</p>
+                              <p className="text-sm text-white/60">Phone</p>
                               <a
                                 href={`tel:${selectedCompany.phone}`}
-                                className="text-primary font-semibold hover:underline"
+                                className="text-[#7B5CFF] font-semibold hover:text-[#A66CFF] transition-colors"
                               >
                                 {selectedCompany.phone}
                               </a>
@@ -394,10 +394,10 @@ function ITCompaniesPage() {
                           </div>
                           
                           <div className="flex items-start gap-3">
-                            <MapPin className="text-primary mt-1" size={20} />
+                            <MapPin className="text-[#7B5CFF] mt-1" size={20} />
                             <div>
-                              <p className="text-sm text-base-content/60">Address</p>
-                              <p className="text-base font-semibold">
+                              <p className="text-sm text-white/60">Address</p>
+                              <p className="text-base font-semibold text-white">
                                 {selectedCompany.address}
                               </p>
                             </div>
@@ -406,27 +406,27 @@ function ITCompaniesPage() {
                       </div>
 
                       {/* Leadership */}
-                      <div className="bg-gradient-to-br from-blue-50 to-purple-50 dark:from-base-800 dark:to-base-700 rounded-lg p-6 border border-blue-200 dark:border-base-600">
-                        <h3 className="text-xl font-bold mb-4 flex items-center gap-2 text-base-content">
-                          <Star size={20} className="text-yellow-500" /> Leadership
+                      <div className="bg-gradient-to-br from-cyan-500/20 to-blue-500/20 backdrop-blur-md rounded-3xl p-6 border border-cyan-500/40 shadow-lg hover:shadow-xl hover:shadow-cyan-500/20 transition-all">
+                        <h3 className="text-xl font-bold mb-4 flex items-center gap-2 text-white">
+                          <Star size={20} className="text-yellow-400" /> Leadership
                         </h3>
-                        <div className="bg-base-100 dark:bg-base-900 rounded-lg p-4 border border-base-300">
+                        <div className="bg-gradient-to-br from-[#7B5CFF]/10 to-[#A66CFF]/10 backdrop-blur-md rounded-2xl p-4 border border-[#7B5CFF]/30">
                           <div className="flex items-start gap-4">
-                            <div className="w-16 h-16 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white text-2xl font-bold">
+                            <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#7B5CFF] to-[#A66CFF] flex items-center justify-center text-white text-2xl font-bold shadow-lg">
                               {selectedCompany.ceo.name.charAt(0)}
                             </div>
                             <div className="flex-1">
-                              <h4 className="text-lg font-bold text-base-content">
+                              <h4 className="text-lg font-bold text-white">
                                 {selectedCompany.ceo.name}
                               </h4>
-                              <p className="text-sm text-base-content/70 mb-2">
+                              <p className="text-sm text-white/70 mb-2">
                                 {selectedCompany.ceo.title}
                               </p>
                               <a
                                 href={`https://${selectedCompany.ceo.linkedin}`}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="inline-flex items-center gap-2 text-primary hover:underline font-semibold"
+                                className="inline-flex items-center gap-2 text-[#7B5CFF] hover:text-[#A66CFF] font-semibold transition-colors"
                               >
                                 <Linkedin size={18} />
                                 LinkedIn Profile
@@ -442,7 +442,7 @@ function ITCompaniesPage() {
                           href={`https://${selectedCompany.careers}`}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="btn btn-primary flex-1"
+                          className="flex-1 px-6 py-3 bg-gradient-to-r from-[#7B5CFF] to-[#A66CFF] hover:from-[#8A6FFF] hover:to-[#B380FF] text-white font-bold rounded-2xl flex items-center justify-center gap-2 shadow-lg hover:shadow-xl hover:shadow-[#7B5CFF]/30 transition-all"
                         >
                           <Briefcase size={18} /> View Careers Page
                         </a>
@@ -450,7 +450,7 @@ function ITCompaniesPage() {
                           href={`https://${selectedCompany.website}`}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="btn btn-outline btn-primary flex-1"
+                          className="flex-1 px-6 py-3 bg-gradient-to-br from-[#7B5CFF]/20 to-[#A66CFF]/20 border border-[#7B5CFF]/50 hover:border-[#7B5CFF]/80 text-white font-bold rounded-2xl flex items-center justify-center gap-2 shadow-lg hover:shadow-xl hover:shadow-[#7B5CFF]/20 transition-all"
                         >
                           <Globe size={18} /> Visit Website
                         </a>
@@ -462,10 +462,10 @@ function ITCompaniesPage() {
             ) : (
               <div className="text-center py-12">
                 <div className="text-6xl mb-4">🔍</div>
-                <h3 className="text-2xl font-bold text-base-content mb-2">
+                <h3 className="text-2xl font-bold text-white mb-2">
                   No Companies Found
                 </h3>
-                <p className="text-base-content/60">
+                <p className="text-white/60">
                   Try adjusting your search or filter criteria
                 </p>
               </div>

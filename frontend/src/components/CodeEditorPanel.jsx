@@ -11,24 +11,25 @@ function CodeEditorPanel({
   onRunCode,
 }) {
   return (
-    <div className="h-full bg-base-300 flex flex-col">
-      <div className="flex items-center justify-between px-4 py-3 bg-base-100 border-t border-base-300">
-        <div className="flex items-center gap-3">
+    <div className="h-full bg-gradient-to-br from-[#0F0C29] via-[#1B1443] to-[#3A1C71] flex flex-col">
+      <div className="flex items-center justify-between px-4 py-3 bg-gradient-to-r from-purple-600/40 to-pink-600/40 backdrop-blur-md border-b border-purple-500/30">
+          <div className="flex items-center gap-3">
           <img
             src={LANGUAGE_CONFIG[selectedLanguage].icon}
             alt={LANGUAGE_CONFIG[selectedLanguage].name}
-            className="size-6"
+            onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = '/vite.svg'; }}
+            className="w-6 h-6 object-contain"
           />
-          <select className="select select-sm" value={selectedLanguage} onChange={onLanguageChange}>
+          <select className="px-3 py-1 bg-gradient-to-br from-purple-500/10 to-pink-500/10 border border-purple-500/30 rounded-lg text-white focus:outline-none focus:border-purple-500/60 focus:ring-2 focus:ring-purple-500/20 text-sm" value={selectedLanguage} onChange={onLanguageChange}>
             {Object.entries(LANGUAGE_CONFIG).map(([key, lang]) => (
-              <option key={key} value={key}>
+              <option key={key} value={key} className="bg-[#0f1729] text-white">
                 {lang.name}
               </option>
             ))}
           </select>
         </div>
 
-        <button className="btn btn-primary btn-sm gap-2" disabled={isRunning} onClick={onRunCode}>
+        <button className="px-3 py-1 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold rounded-lg flex items-center gap-2 transition-all shadow-lg hover:shadow-xl disabled:opacity-50" disabled={isRunning} onClick={onRunCode}>
           {isRunning ? (
             <>
               <Loader2Icon className="size-4 animate-spin" />
