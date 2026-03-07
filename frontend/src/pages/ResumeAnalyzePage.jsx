@@ -5,6 +5,7 @@ import StepContainer from "../components/ResumeAnalyzer/StepContainer";
 import ScoreCircle from "../components/ResumeAnalyzer/ScoreCircle";
 import ATS from "../components/ResumeAnalyzer/ATS";
 import Accordion from "../components/ResumeAnalyzer/Accordion";
+import Result3D from "../components/ResumeAnalyzer/Result3D";
 import { analyzeResume } from "../lib/puter";
 import { extractPdfText, extractTextFile } from "../lib/pdfExtractor";
 
@@ -300,9 +301,23 @@ function ResumeAnalyzePage() {
         {/* Step 5: Results */}
         {step === 5 && analysis && (
           <div className="max-w-6xl mx-auto">
-            <div className="text-center mb-12">
-              <h2 className="text-5xl font-black text-white mb-4">✅ Analysis Complete!</h2>
-              <p className="text-gray-300 text-xl">Here's your comprehensive resume assessment</p>
+            <div className="flex items-start justify-between gap-6 mb-8">
+              <div>
+                <h2 className="text-5xl font-black text-white mb-4">✅ Analysis Complete!</h2>
+                <p className="text-gray-300 text-xl">Here's your comprehensive resume assessment</p>
+              </div>
+              <div className="flex items-center gap-4">
+                <button
+                  onClick={() => window.open('https://resume-analyzer-4tph.vercel.app/', '_blank', 'noopener,noreferrer')}
+                  className="px-6 py-3 bg-gradient-to-r from-pink-600 to-red-500 hover:from-pink-700 hover:to-red-600 text-white rounded-lg font-bold text-md transition-all shadow-lg"
+                >
+                  🔗 More Accurate Analyze
+                </button>
+              </div>
+            </div>
+
+            <div className="mb-6">
+              <Result3D score={analysis.overallScore} />
             </div>
 
             {/* Overall Score - Large and Prominent */}
@@ -311,6 +326,14 @@ function ResumeAnalyzePage() {
                 <div>
                   <p className="text-white/70 text-sm font-bold tracking-widest mb-2">OVERALL SCORE</p>
                   <p className="text-white/60 text-base">Comprehensive analysis of 5 dimensions</p>
+                  <a
+                    href="https://resume-analyzer-4tph.vercel.app/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 mt-2 text-sm text-white/80 hover:text-white/100"
+                  >
+                    Open hosted analyzer ↗
+                  </a>
                 </div>
                 <div className={`text-8xl font-black bg-gradient-to-br from-[#7B5CFF] to-[#A66CFF] bg-clip-text text-transparent`}>
                   {analysis.overallScore}
@@ -418,6 +441,7 @@ function ResumeAnalyzePage() {
               >
                 ← Analyze Another Resume
               </button>
+              
               <a
                 href="/"
                 className="px-10 py-4 bg-gradient-to-r from-[#7B5CFF] to-[#A66CFF] hover:from-[#8A6FFF] hover:to-[#B380FF] text-white rounded-xl font-bold text-lg transition-all shadow-lg"
@@ -425,6 +449,7 @@ function ResumeAnalyzePage() {
                 🏠 Back to Dashboard
               </a>
             </div>
+            
           </div>
         )}
       </div>
