@@ -1,11 +1,12 @@
 import React, { useState, useRef, useEffect } from 'react'
-import { Link, useLocation } from 'react-router'
+import { Link, useLocation, useNavigate } from 'react-router'
 import { BookOpenIcon, LayoutDashboardIcon, SparklesIcon, FileTextIcon, MicIcon, BriefcaseIcon, TrendingUpIcon } from 'lucide-react'
 import { UserButton } from '@clerk/clerk-react';
 
 
 function Navbar() {
    const location = useLocation();
+  const navigate = useNavigate();
   const [showJobs, setShowJobs] = useState(false);
   const jobsRef = useRef(null);
   const [panelStyle, setPanelStyle] = useState({});
@@ -108,14 +109,14 @@ function Navbar() {
           </Link>
 
           <div className="relative">
-            <button
-  
-
+            <Link
+              to="/companies"
+              onClick={() => setShowJobs(false)}
               className={`px-3 py-2 rounded-lg transition-all duration-200 flex items-center gap-x-2 ${isActive('/companies') ? 'bg-[#7B5CFF] text-white shadow-lg shadow-[#7B5CFF]/40' : 'hover:bg-[#7B5CFF]/20 text-white/70 hover:text-white'}`}
             >
               <BriefcaseIcon className="size-4" />
               <span className="font-medium hidden sm:inline text-sm">Jobs</span>
-            </button>
+            </Link>
 
             {/* jobs portal removed — using sticky panel below to push content */}
           </div>
@@ -133,7 +134,7 @@ function Navbar() {
                             {group.items.map((cat) => (
                               <button
                                 key={cat}
-                                onClick={() => { setShowJobs(false); window.location.href = '/companies'; }}
+                                onClick={() => { setShowJobs(false); navigate('/companies'); }}
                                 className="px-4 py-2 rounded-full bg-gradient-to-br from-[#24143a]/20 to-[#34204f]/10 text-white/90 border border-[#7B5CFF]/12 hover:from-[#24143a]/30 hover:to-[#34204f]/20 transition text-sm"
                               >
                                 {cat}
