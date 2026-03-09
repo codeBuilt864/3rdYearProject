@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import Navbar from "../components/Navbar";
 import StrategyCard from "../components/StrategyCard";
 import Templates from "../components/Templates";
@@ -230,6 +230,78 @@ function JobHuntingStrategiesPage() {
     ]);
   }, []);
 
+  // Coverflow carousel state
+  const [activeIndex, setActiveIndex] = useState(0);
+  const coverRef = useRef(null);
+  const isHovering = useRef(false);
+  const dragStartX = useRef(0);
+  const dragging = useRef(false);
+  const detailRefs = useRef([]);
+  const [highlightedIndex, setHighlightedIndex] = useState(null);
+
+  function handleCarouselClick(i) {
+    setActiveIndex(i);
+    // scroll to detail card after short delay to allow animation
+    setTimeout(() => {
+      const el = detailRefs.current[i];
+      if (el && el.scrollIntoView) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        setHighlightedIndex(i);
+        setTimeout(() => setHighlightedIndex(null), 2800);
+      }
+    }, 320);
+  }
+
+  // autoplay
+  useEffect(() => {
+    if (!cards || cards.length === 0) return;
+    const t = setInterval(() => {
+      if (!isHovering.current && !dragging.current) {
+        setActiveIndex((i) => (i + 1) % cards.length);
+      }
+    }, 3500);
+    return () => clearInterval(t);
+  }, [cards]);
+
+  // drag / swipe to change index
+  useEffect(() => {
+    const el = coverRef.current;
+    if (!el) return;
+
+    function onDown(e) {
+      dragging.current = true;
+      dragStartX.current = e.clientX || e.touches?.[0]?.clientX || 0;
+    }
+    function onMove(e) {
+      if (!dragging.current) return;
+      const x = e.clientX || e.touches?.[0]?.clientX || 0;
+      const dx = x - dragStartX.current;
+      if (Math.abs(dx) > 60) {
+        if (dx > 0) setActiveIndex((i) => (i - 1 + cards.length) % cards.length);
+        else setActiveIndex((i) => (i + 1) % cards.length);
+        dragStartX.current = x;
+        dragging.current = false;
+      }
+    }
+    function onUp() { dragging.current = false; }
+
+    el.addEventListener('mousedown', onDown);
+    window.addEventListener('mousemove', onMove);
+    window.addEventListener('mouseup', onUp);
+    el.addEventListener('touchstart', onDown, { passive: true });
+    window.addEventListener('touchmove', onMove, { passive: true });
+    window.addEventListener('touchend', onUp);
+
+    return () => {
+      el.removeEventListener('mousedown', onDown);
+      window.removeEventListener('mousemove', onMove);
+      window.removeEventListener('mouseup', onUp);
+      el.removeEventListener('touchstart', onDown);
+      window.removeEventListener('touchmove', onMove);
+      window.removeEventListener('touchend', onUp);
+    };
+  }, [cards]);
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#0F0C29] via-[#1B1443] to-[#3A1C71] flex flex-col">
       <Navbar />
@@ -239,17 +311,104 @@ function JobHuntingStrategiesPage() {
           <p className="text-lg text-white/80 max-w-3xl">Step-by-step, practical guides to help you land interviews faster and get offers from top recruiters.</p>
         </header>
 
+        {/* Coverflow Preview (readable, centered) */}
+        <div
+          ref={coverRef}
+          onMouseEnter={() => { isHovering.current = true; }}
+          onMouseLeave={() => { isHovering.current = false; }}
+          className="w-full my-12 flex items-center justify-center relative"
+        >
+          <div className="relative w-full max-w-6xl h-[360px] mx-auto" style={{ perspective: 1400 }}>
+            <div className="absolute inset-0 flex items-center justify-center">
+              {cards.map((c, i) => {
+                if (!cards || cards.length === 0) return null;
+                const len = cards.length;
+                let diff = i - activeIndex;
+                const half = Math.floor(len / 2);
+                if (diff > half) diff -= len;
+                if (diff < -half) diff += len;
+
+                const x = diff * 160; // horizontal offset
+                const rotate = diff * -22; // tilt angle
+                const z = diff === 0 ? 180 : -Math.abs(diff) * 60; // depth
+                const scale = diff === 0 ? 1 : Math.max(0.78, 1 - Math.abs(diff) * 0.08);
+                const opacity = Math.abs(diff) > 3 ? 0 : 1 - Math.abs(diff) * 0.18;
+                const zIndex = 100 - Math.abs(diff);
+
+                const style = {
+                  transform: `translateX(${x}px) translateZ(${z}px) rotateY(${rotate}deg) scale(${scale})`,
+                  zIndex,
+                  opacity,
+                };
+
+                return (
+                  <div
+                    key={c.id}
+                    onClick={() => handleCarouselClick(i)}
+                    style={style}
+                    className="absolute w-80 transition-all duration-500 cursor-pointer"
+                    aria-hidden={i !== activeIndex}
+                  >
+                    <div className={`rounded-2xl p-4 shadow-2xl backdrop-blur-md border border-[#7B5CFF]/20 ${i === activeIndex ? 'bg-gradient-to-br from-[#7B5CFF]/30 to-[#A66CFF]/30' : 'bg-[#0f0c1a]/40'}`}>
+                      <div className="flex items-start gap-4">
+                        <div className="w-14 h-14 rounded-lg bg-gradient-to-br from-[#7B5CFF] to-[#A66CFF] flex items-center justify-center text-2xl font-bold">{c.icon}</div>
+                        <div>
+                          <h4 className="text-lg font-black mb-1 text-white">{c.title}</h4>
+                          <p className="text-sm text-white/70 line-clamp-3">{c.intro}</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* controls */}
+            <button
+              onClick={() => setActiveIndex((i) => (i - 1 + cards.length) % cards.length)}
+              className="absolute left-2 top-1/2 -translate-y-1/2 bg-white/6 hover:bg-white/10 text-white rounded-full w-10 h-10 flex items-center justify-center shadow"
+              aria-label="Previous"
+            >
+              ‹
+            </button>
+            <button
+              onClick={() => setActiveIndex((i) => (i + 1) % cards.length)}
+              className="absolute right-2 top-1/2 -translate-y-1/2 bg-white/6 hover:bg-white/10 text-white rounded-full w-10 h-10 flex items-center justify-center shadow"
+              aria-label="Next"
+            >
+              ›
+            </button>
+
+            {/* indicators */}
+            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
+              {cards.map((_, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => setActiveIndex(idx)}
+                  className={`w-2 h-2 rounded-full ${idx === activeIndex ? 'bg-white' : 'bg-white/30'}`}
+                  aria-label={`Go to ${idx + 1}`}
+                />
+              ))}
+            </div>
+          </div>
+        </div>
+
         <section className="grid grid-cols-1 gap-8">
-          {cards.map((c) => (
-            <StrategyCard
+          {cards.map((c, idx) => (
+            <div
               key={c.id}
-              icon={c.icon}
-              title={c.title}
-              image={c.image}
-              intro={c.intro}
-              steps={c.steps}
-              resources={c.resources}
-            />
+              ref={(el) => (detailRefs.current[idx] = el)}
+              className={`${highlightedIndex === idx ? 'ring-4 ring-[#7B5CFF]/40 rounded-3xl transition-shadow' : ''}`}
+            >
+              <StrategyCard
+                icon={c.icon}
+                title={c.title}
+                image={c.image}
+                intro={c.intro}
+                steps={c.steps}
+                resources={c.resources}
+              />
+            </div>
           ))}
 
           <div className="mt-8">
