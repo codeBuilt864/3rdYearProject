@@ -1,6 +1,7 @@
 import express from "express";
 import path from "path";
 import cors from "cors";
+import morgan from "morgan";
 import { serve } from "inngest/express";
 import { clerkMiddleware } from "@clerk/express";
 
@@ -10,13 +11,17 @@ import { functions, inngest } from "./lib/inngest.js";
 import chatRoutes from "./routes/chatRoute.js";
 import sessionRoutes from "./routes/sessionRoute.js";
 import resumeRoutes from "./routes/resumeRoute.js";
-// import mockInterviewRoutes from "./routes/mockInterviewRoute.js";
+import mockInterviewRoutes from "./routes/mockInterviewRoute.js";
 
+import dns from "dns";
+
+dns.setServers(["1.1.1.1", "8.8.8.8"]);
 
 const app = express();
 const __dirname = path.resolve();
 
 //middleware
+app.use(morgan("dev"));
 app.use(express.json());
 app.use(cors({ origin: ENV.CLIENT_URL, credentials: true }));
 app.use(clerkMiddleware()); //this addss auth field to request object
@@ -24,12 +29,11 @@ app.use("/api/inngest", serve({ client: inngest, functions }));
 app.use("/api/chat", chatRoutes);
 app.use("/api/sessions", sessionRoutes);
 app.use("/api/resume", resumeRoutes);
-// app.use("/api/mock-interview", mockInterviewRoutes);
-
+app.use("/api/mock-interview", mockInterviewRoutes);
 
 app.get("/health", (req, res) => {
   res.status(200).json({ msg: "api is up and running" });
-})
+});
 
 if (ENV.NODE_ENV === "production") {
   app.use(express.static(path.join(__dirname, "../frontend/dist")));

@@ -13,13 +13,17 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@ai-sdk/google": "^4.0.11",
     "@clerk/express": "^1.7.41",
     "@stream-io/node-sdk": "^0.7.12",
+    "ai": "^7.0.19",
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",
     "express": "^5.1.0",
+    "hume": "^0.16.0",
     "inngest": "^3.44.3",
     "mongoose": "^8.19.1",
+    "morgan": "^1.11.0",
     "stream-chat": "^9.24.0"
   },
   "devDependencies": {

@@ -12,4 +12,7 @@ export const ENV = {
   STREAM_API_KEY: process.env.STREAM_API_KEY,
   STREAM_API_SECRET: process.env.STREAM_API_SECRET,
   OPENAI_API_KEY: process.env.OPENAI_API_KEY,
+  HUME_API_KEY: process.env.HUME_API_KEY,
+  HUME_SECRET_KEY: process.env.HUME_SECRET_KEY,
+  GEMINI_API_KEY: process.env.GEMINI_API_KEY,
 };
