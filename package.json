@@ -4,7 +4,10 @@
   "main": "index.js",
   "scripts": {
     "build": "npm install --prefix backend && npm install --prefix frontend && npm run build --prefix frontend",
-    "start": "npm run start --prefix backend"
+    "start": "npm run start --prefix backend",
+    "frontend": "npm run dev --prefix frontend",
+    "backend": "npm run dev --prefix backend",
+    "dev": "concurrently \"npm run backend\" \"npm run frontend\""
   },
   "repository": {
     "type": "git",
@@ -16,5 +19,8 @@
   "bugs": {
     "url": "https://github.com/codeBuilt864/3rdYearProject/issues"
   },
-  "homepage": "https://github.com/codeBuilt864/3rdYearProject#readme"
+  "homepage": "https://github.com/codeBuilt864/3rdYearProject#readme",
+  "devDependencies": {
+    "concurrently": "^10.0.3"
+  }
 }

@@ -18,6 +18,7 @@ function StartCall({ jobInfo, accessToken }) {
   const { connect, readyState, chatMetadata, callDurationTimestamp, messages, fft, disconnect, isMuted, mute, unmute, micFft } = useVoice();
 
   const [interviewId, setInterviewId] = useState(null);
+  const hasConnectedRef = useRef(false);
   const durationRef = useRef(callDurationTimestamp);
   durationRef.current = callDurationTimestamp;
 
@@ -41,61 +42,32 @@ function StartCall({ jobInfo, accessToken }) {
     return () => clearInterval(id);
   }, [interviewId]);
 
-  // On disconnect — save final duration and navigate to detail page
+  // Track when a real connection attempt has started
   useEffect(() => {
-    if (readyState !== VoiceReadyState.CLOSED) return;
-    if (interviewId == null) {
-      return navigate(`/mockinterview/${jobInfoId}`);
+    if (readyState === VoiceReadyState.CONNECTING || readyState === VoiceReadyState.OPEN) {
+      hasConnectedRef.current = true;
     }
-    if (durationRef.current != null) {
+  }, [readyState]);
+
+  // On disconnect — navigate away only after a real connection was made
+  useEffect(() => {
+    if (readyState !== VoiceReadyState.CLOSED || !hasConnectedRef.current) return;
+    if (durationRef.current != null && interviewId != null) {
       axiosInstance
         .patch(`/api/mock-interview/interviews/${interviewId}`, { duration: durationRef.current })
         .catch(console.error);
     }
-    navigate(`/mockinterview/${jobInfoId}/interviews/${interviewId}`);
-  }, [readyState, interviewId, jobInfoId, navigate]);
+    if (interviewId == null) {
+      navigate(`/mockinterview/${jobInfoId}`);
+    } else {
+      navigate(`/mockinterview/${jobInfoId}/interviews/${interviewId}`);
+    }
+  }, [readyState]);
 
   const condensedMessages = useMemo(() => condenseChatMessages(messages), [messages]);
 
-  // IDLE — show Start Interview button
-  if (readyState === VoiceReadyState.IDLE) {
-    return (
-      <div className="flex-1 flex items-center justify-center">
-        <button
-          onClick={async () => {
-            try {
-              const { data } = await axiosInstance.post("/api/mock-interview/interviews", {
-                jobInfoId,
-              });
-              setInterviewId(data.interview._id);
-              connect({
-                auth: { type: "accessToken", value: accessToken },
-                configId: import.meta.env.VITE_HUME_CONFIG_ID,
-                sessionSettings: {
-                  type: "session_settings",
-                  variables: {
-                    userName: user?.fullName ?? "Candidate",
-                    title: jobInfo.title ?? "Not Specified",
-                    description: jobInfo.description,
-                    experienceLevel: jobInfo.experienceLevel,
-                  },
-                },
-              });
-            } catch (err) {
-              console.error(err);
-              toast.error("Failed to start interview");
-            }
-          }}
-          className="px-10 py-4 bg-gradient-to-r from-[#7B5CFF] to-[#A66CFF] hover:from-[#8A6FFF] hover:to-[#B380FF] text-white rounded-2xl font-bold text-lg transition-all shadow-lg hover:scale-[1.02] duration-300"
-        >
-          Start Interview
-        </button>
-      </div>
-    );
-  }
-
-  // CONNECTING or CLOSED — show spinner
-  if (readyState === VoiceReadyState.CONNECTING || readyState === VoiceReadyState.CLOSED) {
+  // CONNECTING — show spinner
+  if (readyState === VoiceReadyState.CONNECTING) {
     return (
       <div className="flex-1 flex items-center justify-center">
         <Loader2Icon className="size-16 animate-spin text-[#7B5CFF]" />
@@ -104,44 +76,81 @@ function StartCall({ jobInfo, accessToken }) {
   }
 
   // OPEN — live call UI
-  return (
-    <div className="flex-1 overflow-y-auto flex flex-col-reverse">
-      <div className="max-w-5xl mx-auto w-full px-6 py-6 flex flex-col items-center justify-end gap-4">
-        <CondensedMessages
-          messages={condensedMessages}
-          maxFft={Math.max(...fft)}
-          className="max-w-3xl w-full"
-        />
+  if (readyState === VoiceReadyState.OPEN) {
+    return (
+      <div className="flex-1 overflow-y-auto flex flex-col-reverse">
+        <div className="max-w-5xl mx-auto w-full px-6 py-6 flex flex-col items-center justify-end gap-4">
+          <CondensedMessages
+            messages={condensedMessages}
+            maxFft={fft.length > 0 ? Math.max(...fft) : 0}
+            className="max-w-3xl w-full"
+          />
 
-        {/* Controls bar */}
-        <div className="flex gap-5 rounded-2xl border border-[#7B5CFF]/30 bg-[#071025] px-6 py-3 w-fit sticky bottom-6 items-center shadow-xl">
-          <button
-            className="p-2 rounded-lg hover:bg-[#7B5CFF]/20 transition-colors"
-            onClick={() => (isMuted ? unmute() : mute())}
-          >
-            {isMuted ? (
-              <MicOffIcon className="size-5 text-red-400" />
-            ) : (
-              <MicIcon className="size-5 text-white" />
-            )}
-          </button>
+          {/* Controls bar */}
+          <div className="flex gap-5 rounded-2xl border border-[#7B5CFF]/30 bg-[#071025] px-6 py-3 w-fit sticky bottom-6 items-center shadow-xl">
+            <button
+              className="p-2 rounded-lg hover:bg-[#7B5CFF]/20 transition-colors"
+              onClick={() => (isMuted ? unmute() : mute())}
+            >
+              {isMuted ? (
+                <MicOffIcon className="size-5 text-red-400" />
+              ) : (
+                <MicIcon className="size-5 text-white" />
+              )}
+            </button>
 
-          <div className="h-8 self-stretch">
-            <FftVisualizer fft={micFft} />
+            <div className="h-8 self-stretch">
+              <FftVisualizer fft={micFft} />
+            </div>
+
+            <span className="text-sm text-white/50 tabular-nums min-w-[50px] text-center">
+              {callDurationTimestamp}
+            </span>
+
+            <button
+              className="p-2 rounded-lg hover:bg-red-500/20 transition-colors"
+              onClick={disconnect}
+            >
+              <PhoneOffIcon className="size-5 text-red-400" />
+            </button>
           </div>
-
-          <span className="text-sm text-white/50 tabular-nums min-w-[50px] text-center">
-            {callDurationTimestamp}
-          </span>
-
-          <button
-            className="p-2 rounded-lg hover:bg-red-500/20 transition-colors"
-            onClick={disconnect}
-          >
-            <PhoneOffIcon className="size-5 text-red-400" />
-          </button>
         </div>
       </div>
+    );
+  }
+
+  // IDLE or CLOSED (initial state) — show Start Interview button
+  return (
+    <div className="flex-1 flex items-center justify-center">
+      <button
+        onClick={async () => {
+          try {
+            const { data } = await axiosInstance.post("/api/mock-interview/interviews", {
+              jobInfoId,
+            });
+            setInterviewId(data.interview._id);
+            connect({
+              auth: { type: "accessToken", value: accessToken },
+              configId: import.meta.env.VITE_HUME_CONFIG_ID,
+              sessionSettings: {
+                type: "session_settings",
+                variables: {
+                  userName: user?.fullName ?? "Candidate",
+                  title: jobInfo.title ?? "Not Specified",
+                  description: jobInfo.description,
+                  ExperienceLevel: jobInfo.experienceLevel,
+                },
+              },
+            });
+          } catch (err) {
+            console.error(err);
+            toast.error("Failed to start interview");
+          }
+        }}
+        className="px-10 py-4 bg-gradient-to-r from-[#7B5CFF] to-[#A66CFF] hover:from-[#8A6FFF] hover:to-[#B380FF] text-white rounded-2xl font-bold text-lg transition-all shadow-lg hover:scale-[1.02] duration-300"
+      >
+        Start Interview
+      </button>
     </div>
   );
 }
@@ -188,7 +197,7 @@ function MockInterviewCallPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#0F0C29] via-[#1B1443] to-[#3A1C71] flex flex-col">
       <Navbar />
-      <VoiceProvider>
+      <VoiceProvider onError={(error) => console.error("Hume error:", error)}>
         <StartCall jobInfo={jobInfo} accessToken={accessToken} />
       </VoiceProvider>
     </div>
