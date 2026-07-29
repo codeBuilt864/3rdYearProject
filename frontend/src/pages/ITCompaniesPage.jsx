@@ -7,7 +7,7 @@ const COMPANIES_DATA = [
   {
     id: 1,
     name: "IFS",
-    logo: "🏢",
+    logo: "/job_companies/IFS.jpeg",
     industry: "Enterprise Software",
     headquarters: "Colombo, Sri Lanka",
     founded: "1983",
@@ -28,7 +28,7 @@ const COMPANIES_DATA = [
   {
     id: 2,
     name: "WSO2",
-    logo: "⚙️",
+    logo: "/job_companies/ws02.jpeg",
     industry: "API Management & Integration",
     headquarters: "Colombo, Sri Lanka",
     founded: "2005",
@@ -49,7 +49,7 @@ const COMPANIES_DATA = [
   {
     id: 3,
     name: "99x Technology",
-    logo: "💻",
+    logo: "/job_companies/99x.jpeg",
     industry: "Software Development & Consulting",
     headquarters: "Colombo, Sri Lanka",
     founded: "2007",
@@ -70,7 +70,7 @@ const COMPANIES_DATA = [
   {
     id: 4,
     name: "Virtusa",
-    logo: "🌐",
+    logo: "/job_companies/virtusa.jpeg",
     industry: "IT Services & Digital Transformation",
     headquarters: "Colombo, Sri Lanka",
     founded: "1996",
@@ -91,7 +91,7 @@ const COMPANIES_DATA = [
   {
     id: 5,
     name: "Dialog Axiata",
-    logo: "📱",
+    logo: "/job_companies/dialog.jpeg",
     industry: "Telecommunications & IT Solutions",
     headquarters: "Colombo, Sri Lanka",
     founded: "1997",
@@ -112,7 +112,7 @@ const COMPANIES_DATA = [
   {
     id: 6,
     name: "Callsure Solutions",
-    logo: "☎️",
+    logo: "/job_companies/callsure.jpeg",
     industry: "Contact Center Solutions",
     headquarters: "Colombo, Sri Lanka",
     founded: "2007",
@@ -133,7 +133,7 @@ const COMPANIES_DATA = [
   {
     id: 7,
     name: "Fintech Hub Lanka",
-    logo: "💰",
+    logo: "/job_companies/Fintech_hub.jpeg",
     industry: "Financial Technology",
     headquarters: "Colombo, Sri Lanka",
     founded: "2018",
@@ -154,7 +154,7 @@ const COMPANIES_DATA = [
   {
     id: 8,
     name: "Accelq Technologies",
-    logo: "🚀",
+    logo: "/job_companies/acceloq.jpeg",
     industry: "Software Testing & QA",
     headquarters: "Colombo, Sri Lanka",
     founded: "2011",
@@ -289,7 +289,7 @@ function ITCompaniesPage() {
                   <div className="h-full bg-gradient-to-br from-[#7B5CFF]/30 to-[#A66CFF]/30 backdrop-blur-md border border-[#7B5CFF]/40 rounded-2xl p-6 hover:border-[#7B5CFF]/80 hover:shadow-2xl hover:shadow-[#7B5CFF]/40 transition-all duration-300 flex flex-col">
                     {/* Company Logo & Header */}
                     <div className="flex items-start justify-between mb-4">
-                      <div className="text-5xl">{company.logo}</div>
+                      <img src={company.logo} alt={company.name} className="w-14 h-14 object-contain rounded-xl" />
                       <Award className="text-[#A66CFF] opacity-0 group-hover:opacity-100 transition-opacity" size={24} />
                     </div>
 
@@ -378,7 +378,7 @@ function ITCompaniesPage() {
             {/* Modal Header */}
             <div className="bg-gradient-to-r from-[#7B5CFF]/40 to-[#A66CFF]/40 border-b border-[#7B5CFF]/30 p-8 flex items-start justify-between">
               <div className="flex items-start gap-6">
-                <div className="text-6xl">{selectedCompany.logo}</div>
+                <img src={selectedCompany.logo} alt={selectedCompany.name} className="w-20 h-20 object-contain rounded-2xl" />
                 <div>
                   <h2 className="text-4xl font-black text-white mb-2">
                     {selectedCompany.name}
