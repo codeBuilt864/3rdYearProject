@@ -3,7 +3,6 @@ import { Link, useLocation, useNavigate } from "react-router";
 import {
   BookOpenIcon,
   LayoutDashboardIcon,
-  SparklesIcon,
   FileTextIcon,
   MicIcon,
   BriefcaseIcon,
@@ -74,18 +73,18 @@ function Navbar() {
       <div className="max-w-7xl mx-auto p-4 flex items-center justify-between">
         <Link
           to="/"
-          className="group flex items-center gap-2 hover:scale-105 transition-transform duration-200"
+          className="group flex items-center gap-3 hover:scale-105 transition-transform duration-200"
         >
-          <div className="size-10 rounded-lg bg-gradient-to-br from-[#7B5CFF] via-[#A66CFF] to-[#7B5CFF] flex items-center justify-center shadow-lg shadow-[#7B5CFF]/30">
-            <span className="text-lg font-bold text-white">✓</span>
+          <div className="w-11 h-11 rounded-2xl overflow-hidden shadow-xl shadow-[#7B5CFF]/30">
+            <img src="/logo/main_logo.jpeg" alt="Mentor Lenzo" className="w-full h-full object-cover" />
           </div>
 
-          <div className="flex flex-col">
-            <span className="font-black text-sm bg-gradient-to-r from-[#7B5CFF] via-[#A66CFF] to-[#7B5CFF] bg-clip-text text-transparent tracking-wider">
-              MENTOR LENZO
+          <div className="flex flex-col leading-tight">
+            <span className="font-black text-sm uppercase tracking-[0.2em] text-white">
+              Mentor Lenzo
             </span>
-            <span className="text-[10px] text-white/60 font-semibold -mt-1">
-              AI
+            <span className="text-[10px] text-white/60 font-semibold -mt-0.5">
+              Career AI
             </span>
           </div>
         </Link>
@@ -214,7 +213,7 @@ function Navbar() {
             <div className="flex items-center gap-x-2">
               <TrendingUpIcon className="size-4" />
               <span className="font-medium hidden sm:inline text-sm">
-                Tips & Tricks
+                tips & tricks
               </span>
             </div>
           </Link>

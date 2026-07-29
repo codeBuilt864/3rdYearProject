@@ -22,12 +22,15 @@ function HomePage() {
       <nav className="bg-[#1B1443]/80 backdrop-blur-md border-b border-[#7B5CFF]/30 sticky top-0 z-50 shadow-lg shadow-[#7B5CFF]/20">
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-3 hover:scale-105 transition-transform">
-            <div className="size-12 rounded-lg bg-gradient-to-br from-[#7B5CFF] via-[#A66CFF] to-[#7B5CFF] flex items-center justify-center shadow-lg shadow-[#7B5CFF]/30">
-              <span className="text-xl font-bold text-white">✓</span>
+            <div className="w-11 h-11 rounded-2xl overflow-hidden shadow-xl shadow-[#7B5CFF]/30">
+              <img src="/logo/main_logo.jpeg" alt="Mentor Lenzo" className="w-full h-full object-cover" />
             </div>
-            <div className="flex flex-col">
-              <span className="font-black text-base bg-gradient-to-r from-[#7B5CFF] via-[#A66CFF] to-[#7B5CFF] bg-clip-text text-transparent tracking-wider">
-                MENTOR LENZO AI
+            <div className="flex flex-col leading-tight">
+              <span className="font-black text-sm uppercase tracking-[0.2em] text-white">
+                Mentor Lenzo
+              </span>
+              <span className="text-[10px] text-white/60 font-semibold -mt-0.5">
+                Career AI
               </span>
             </div>
           </Link>
