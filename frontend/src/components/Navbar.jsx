@@ -1,11 +1,18 @@
-import React, { useState, useRef, useEffect } from 'react'
-import { Link, useLocation, useNavigate } from 'react-router'
-import { BookOpenIcon, LayoutDashboardIcon, SparklesIcon, FileTextIcon, MicIcon, BriefcaseIcon, TrendingUpIcon } from 'lucide-react'
-import { UserButton } from '@clerk/clerk-react';
-
+import React, { useState, useRef, useEffect } from "react";
+import { Link, useLocation, useNavigate } from "react-router";
+import {
+  BookOpenIcon,
+  LayoutDashboardIcon,
+  SparklesIcon,
+  FileTextIcon,
+  MicIcon,
+  BriefcaseIcon,
+  TrendingUpIcon,
+} from "lucide-react";
+import { UserButton } from "@clerk/clerk-react";
 
 function Navbar() {
-   const location = useLocation();
+  const location = useLocation();
   const navigate = useNavigate();
   const [showJobs, setShowJobs] = useState(false);
   const jobsRef = useRef(null);
@@ -13,39 +20,58 @@ function Navbar() {
 
   const JOB_GROUPS = [
     {
-      title: 'Core Platforms',
-      items: ['All Specialties', 'Enterprise Software', 'Cloud Solutions', 'Digital Solutions', 'Custom Software'],
+      title: "Core Platforms",
+      items: [
+        "All Specialties",
+        "Enterprise Software",
+        "Cloud Solutions",
+        "Digital Solutions",
+        "Custom Software",
+      ],
     },
     {
-      title: 'Integration & Identity',
-      items: ['API Gateway', 'Integration Platform', 'Identity Management', 'Cloud CCaaS'],
+      title: "Integration & Identity",
+      items: [
+        "API Gateway",
+        "Integration Platform",
+        "Identity Management",
+        "Cloud CCaaS",
+      ],
     },
     {
-      title: 'AI & Data',
-      items: ['AI Integration', 'AI/ML Solutions', 'Digital Engineering'],
+      title: "AI & Data",
+      items: ["AI Integration", "AI/ML Solutions", "Digital Engineering"],
     },
     {
-      title: 'Engineering & Delivery',
-      items: ['Agile Development', 'Digital Transformation', 'Cloud Services', 'Telecommunications'],
+      title: "Engineering & Delivery",
+      items: [
+        "Agile Development",
+        "Digital Transformation",
+        "Cloud Services",
+        "Telecommunications",
+      ],
     },
     {
-      title: 'Customer & Payments',
-      items: ['Contact Center Tech', 'Customer Experience', 'Digital Payments', 'Financial Software', 'Blockchain'],
+      title: "Customer & Payments",
+      items: [
+        "Contact Center Tech",
+        "Customer Experience",
+        "Digital Payments",
+        "Financial Software",
+        "Blockchain",
+      ],
     },
     {
-      title: 'Testing & QA',
-      items: ['Test Automation', 'AI QA', 'Software Testing'],
+      title: "Testing & QA",
+      items: ["Test Automation", "AI QA", "Software Testing"],
     },
   ];
 
   const isActive = (path) => location.pathname === path;
-  
-
 
   return (
-      <nav className="bg-[#1B1443]/80 backdrop-blur-md border-b border-[#7B5CFF]/30 sticky top-0 z-50 shadow-lg shadow-[#7B5CFF]/20">
+    <nav className="bg-[#1B1443]/80 backdrop-blur-md border-b border-[#7B5CFF]/30 sticky top-0 z-50 shadow-lg shadow-[#7B5CFF]/20">
       <div className="max-w-7xl mx-auto p-4 flex items-center justify-between">
-        
         <Link
           to="/"
           className="group flex items-center gap-2 hover:scale-105 transition-transform duration-200"
@@ -58,12 +84,15 @@ function Navbar() {
             <span className="font-black text-sm bg-gradient-to-r from-[#7B5CFF] via-[#A66CFF] to-[#7B5CFF] bg-clip-text text-transparent tracking-wider">
               MENTOR LENZO
             </span>
-            <span className="text-[10px] text-white/60 font-semibold -mt-1">AI</span>
+            <span className="text-[10px] text-white/60 font-semibold -mt-1">
+              AI
+            </span>
           </div>
         </Link>
 
         <div className="flex items-center gap-1">
-          <Link to={"/problems"}
+          <Link
+            to={"/problems"}
             className={`px-3 py-2 rounded-lg transition-all duration-200 
               ${
                 isActive("/problems")
@@ -74,11 +103,14 @@ function Navbar() {
           >
             <div className="flex items-center gap-x-2">
               <BookOpenIcon className="size-4" />
-              <span className="font-medium hidden sm:inline text-sm">Coding</span>
+              <span className="font-medium hidden sm:inline text-sm">
+                Coding
+              </span>
             </div>
           </Link>
 
-          <Link to={"/resumeanalyze"}
+          <Link
+            to={"/resumeanalyze"}
             className={`px-3 py-2 rounded-lg transition-all duration-200 
               ${
                 isActive("/resumeanalyze")
@@ -89,11 +121,14 @@ function Navbar() {
           >
             <div className="flex items-center gap-x-2">
               <FileTextIcon className="size-4" />
-              <span className="font-medium hidden sm:inline text-sm">Resume</span>
+              <span className="font-medium hidden sm:inline text-sm">
+                Resume
+              </span>
             </div>
           </Link>
 
-          <Link to={"/mockinterview"}
+          <Link
+            to={"/mockinterview"}
             className={`px-3 py-2 rounded-lg transition-all duration-200 
               ${
                 isActive("/mockinterview")
@@ -104,7 +139,9 @@ function Navbar() {
           >
             <div className="flex items-center gap-x-2">
               <MicIcon className="size-4" />
-              <span className="font-medium hidden sm:inline text-sm">Interview</span>
+              <span className="font-medium hidden sm:inline text-sm">
+                Interview
+              </span>
             </div>
           </Link>
 
@@ -112,7 +149,7 @@ function Navbar() {
             <Link
               to="/companies"
               onClick={() => setShowJobs(false)}
-              className={`px-3 py-2 rounded-lg transition-all duration-200 flex items-center gap-x-2 ${isActive('/companies') ? 'bg-[#7B5CFF] text-white shadow-lg shadow-[#7B5CFF]/40' : 'hover:bg-[#7B5CFF]/20 text-white/70 hover:text-white'}`}
+              className={`px-3 py-2 rounded-lg transition-all duration-200 flex items-center gap-x-2 ${isActive("/companies") ? "bg-[#7B5CFF] text-white shadow-lg shadow-[#7B5CFF]/40" : "hover:bg-[#7B5CFF]/20 text-white/70 hover:text-white"}`}
             >
               <BriefcaseIcon className="size-4" />
               <span className="font-medium hidden sm:inline text-sm">Jobs</span>
@@ -129,12 +166,17 @@ function Navbar() {
                     <div className="space-y-4">
                       {JOB_GROUPS.map((group) => (
                         <div key={group.title}>
-                          <div className="text-sm font-semibold text-white/80 mb-2">{group.title}</div>
+                          <div className="text-sm font-semibold text-white/80 mb-2">
+                            {group.title}
+                          </div>
                           <div className="flex flex-wrap gap-3">
                             {group.items.map((cat) => (
                               <button
                                 key={cat}
-                                onClick={() => { setShowJobs(false); navigate('/companies'); }}
+                                onClick={() => {
+                                  setShowJobs(false);
+                                  navigate("/companies");
+                                }}
                                 className="px-4 py-2 rounded-full bg-gradient-to-br from-[#24143a]/20 to-[#34204f]/10 text-white/90 border border-[#7B5CFF]/12 hover:from-[#24143a]/30 hover:to-[#34204f]/20 transition text-sm"
                               >
                                 {cat}
@@ -147,7 +189,10 @@ function Navbar() {
                   </div>
 
                   <div className="flex-shrink-0 ml-4">
-                    <button onClick={() => setShowJobs(false)} className="px-3 py-2 rounded-lg bg-transparent border border-white/10 text-white/70 hover:text-white hover:bg-white/5 transition">
+                    <button
+                      onClick={() => setShowJobs(false)}
+                      className="px-3 py-2 rounded-lg bg-transparent border border-white/10 text-white/70 hover:text-white hover:bg-white/5 transition"
+                    >
                       Close
                     </button>
                   </div>
@@ -156,7 +201,8 @@ function Navbar() {
             </div>
           )}
 
-          <Link to={"/strategies"}
+          <Link
+            to={"/strategies"}
             className={`px-3 py-2 rounded-lg transition-all duration-200 
               ${
                 isActive("/strategies")
@@ -167,11 +213,13 @@ function Navbar() {
           >
             <div className="flex items-center gap-x-2">
               <TrendingUpIcon className="size-4" />
-              <span className="font-medium hidden sm:inline text-sm">Profile</span>
+              <span className="font-medium hidden sm:inline text-sm">
+                Tips & Tricks
+              </span>
             </div>
           </Link>
 
-           <Link
+          <Link
             to={"/dashboard"}
             className={`px-3 py-2 rounded-lg transition-all duration-200 
               ${
@@ -184,22 +232,19 @@ function Navbar() {
           >
             <div className="flex items-center gap-x-2">
               <LayoutDashboardIcon className="size-4" />
-              <span className="font-medium hidden sm:inline text-sm">Dashboard</span>
+              <span className="font-medium hidden sm:inline text-sm">
+                Dashboard
+              </span>
             </div>
           </Link>
-          
-          
 
           <div className="ml-4">
-            
-            <UserButton/>
+            <UserButton />
           </div>
-          </div>
-
-</div>
-    
+        </div>
+      </div>
     </nav>
-  )
+  );
 }
 
-export default Navbar
+export default Navbar;
