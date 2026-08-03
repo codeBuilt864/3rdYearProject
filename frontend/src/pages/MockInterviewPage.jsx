@@ -11,94 +11,6 @@ const EXPERIENCE_LABELS = {
   senior: "Senior",
 };
 
-function JobInfoForm({ onSuccess, existing }) {
-  const [form, setForm] = useState({
-    name: existing?.name ?? "",
-    title: existing?.title ?? "",
-    experienceLevel: existing?.experienceLevel ?? "junior",
-    description: existing?.description ?? "",
-  });
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  async function handleSubmit(e) {
-    e.preventDefault();
-    setIsSubmitting(true);
-    try {
-      const payload = { ...form, title: form.title || null };
-      if (existing) {
-        await axiosInstance.put(`/api/mock-interview/job-infos/${existing._id}`, payload);
-      } else {
-        await axiosInstance.post("/api/mock-interview/job-infos", payload);
-      }
-      onSuccess();
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setIsSubmitting(false);
-    }
-  }
-
-  return (
-    <form onSubmit={handleSubmit} className="space-y-6">
-      <div>
-        <label className="block text-sm font-semibold text-white mb-1">Name</label>
-        <input
-          required
-          value={form.name}
-          onChange={(e) => setForm({ ...form, name: e.target.value })}
-          placeholder="e.g. Google SWE Application"
-          className="w-full px-4 py-3 bg-[#071025] text-white rounded-xl border border-[#7B5CFF]/30 focus:border-[#7B5CFF]/60 focus:outline-none focus:ring-2 focus:ring-[#7B5CFF]/30 transition-all placeholder:text-white/40"
-        />
-        <p className="text-xs text-white/50 mt-1">Displayed in the UI for easy identification.</p>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <div>
-          <label className="block text-sm font-semibold text-white mb-1">Job Title (optional)</label>
-          <input
-            value={form.title}
-            onChange={(e) => setForm({ ...form, title: e.target.value })}
-            placeholder="e.g. Senior Frontend Engineer"
-            className="w-full px-4 py-3 bg-[#071025] text-white rounded-xl border border-[#7B5CFF]/30 focus:border-[#7B5CFF]/60 focus:outline-none focus:ring-2 focus:ring-[#7B5CFF]/30 transition-all placeholder:text-white/40"
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-semibold text-white mb-1">Experience Level</label>
-          <select
-            value={form.experienceLevel}
-            onChange={(e) => setForm({ ...form, experienceLevel: e.target.value })}
-            className="w-full px-4 py-3 bg-[#071025] text-white rounded-xl border border-[#7B5CFF]/30 focus:border-[#7B5CFF]/60 focus:outline-none focus:ring-2 focus:ring-[#7B5CFF]/30 transition-all"
-          >
-            <option value="junior">Junior</option>
-            <option value="mid-level">Mid-level</option>
-            <option value="senior">Senior</option>
-          </select>
-        </div>
-      </div>
-
-      <div>
-        <label className="block text-sm font-semibold text-white mb-1">Job Description</label>
-        <textarea
-          required
-          rows={5}
-          value={form.description}
-          onChange={(e) => setForm({ ...form, description: e.target.value })}
-          placeholder="Paste the job description here. Be as specific as possible — the more detail you provide, the more realistic the interview will be."
-          className="w-full px-4 py-3 bg-[#071025] text-white rounded-xl border border-[#7B5CFF]/30 focus:border-[#7B5CFF]/60 focus:outline-none focus:ring-2 focus:ring-[#7B5CFF]/30 transition-all resize-none placeholder:text-white/40"
-        />
-      </div>
-
-      <button
-        type="submit"
-        disabled={isSubmitting}
-        className="w-full py-3 bg-gradient-to-r from-[#7B5CFF] to-[#A66CFF] hover:from-[#8A6FFF] hover:to-[#B380FF] disabled:from-gray-600 disabled:to-gray-600 text-white rounded-xl font-bold transition-all shadow-lg hover:scale-[1.02] disabled:cursor-not-allowed duration-300"
-      >
-        {isSubmitting ? "Saving..." : "Save Job Information"}
-      </button>
-    </form>
-  );
-}
-
 function MockInterviewPage() {
   const navigate = useNavigate();
   const { isLoaded } = useAuth();
@@ -131,7 +43,6 @@ function MockInterviewPage() {
     );
   }
 
-  // No job infos yet — show inline create form
   if (jobInfos.length === 0) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-[#0F0C29] via-[#1B1443] to-[#3A1C71] flex flex-col">
@@ -139,12 +50,15 @@ function MockInterviewPage() {
         <div className="max-w-3xl mx-auto w-full p-6 space-y-6">
           <h1 className="text-3xl md:text-4xl font-black text-white">AI Mock Interview</h1>
           <p className="text-white/60">
-            To get started, enter information about the job you are preparing for. The more specific
-            you are, the more realistic the interview will be.
+            To get started, enter the job you're preparing for. The AI will conduct a realistic interview based on the job requirements.
           </p>
-          <div className="bg-[#071025] border border-[#7B5CFF]/20 rounded-2xl p-8">
-            <JobInfoForm onSuccess={fetchJobInfos} />
-          </div>
+          <button
+            onClick={() => navigate("/mockinterview/new")}
+            className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#7B5CFF] to-[#A66CFF] text-white rounded-xl font-bold hover:scale-[1.02] transition-all"
+          >
+            <PlusIcon className="size-4" />
+            Add Job Description
+          </button>
         </div>
       </div>
     );
