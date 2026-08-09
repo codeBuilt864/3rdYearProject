@@ -14,6 +14,7 @@ import resumeRoutes from "./routes/resumeRoute.js";
 import mockInterviewRoutes from "./routes/mockInterviewRoute.js";
 import resumeAnalyzerRoutes from "./routes/resumeAnalyzerRoute.js";
 import jobDescriptionRoutes from "./routes/jobDescriptionRoute.js";
+import webhookRoutes from "./routes/webhookRoute.js";
 
 import dns from "dns";
 
@@ -21,6 +22,9 @@ dns.setServers(["1.1.1.1", "8.8.8.8"]);
 
 const app = express();
 const __dirname = path.resolve();
+
+// Webhook route must be before express.json() to preserve raw body for signature verification
+app.use("/api/webhooks", webhookRoutes);
 
 //middleware
 app.use(morgan("dev"));
