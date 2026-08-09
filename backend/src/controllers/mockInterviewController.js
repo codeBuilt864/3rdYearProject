@@ -2,7 +2,7 @@ import { fetchAccessToken, HumeClient } from "hume";
 import { generateText } from "ai";
 import { createGoogleGenerativeAI } from "@ai-sdk/google";
 import { ENV } from "../lib/env.js";
-import MockJobInfo from "../models/MockJobInfo.js";
+import JobInfo from "../models/JobDescription.js";
 import MockInterview from "../models/MockInterview.js";
 
 const google = createGoogleGenerativeAI({ apiKey: ENV.GEMINI_API_KEY });
@@ -21,88 +21,13 @@ export async function getHumeToken(req, res) {
   }
 }
 
-// GET /api/mock-interview/job-infos
-export async function getJobInfos(req, res) {
-  try {
-    const clerkUserId = req.auth().userId;
-    const jobInfos = await MockJobInfo.find({ clerkUserId }).sort({ updatedAt: -1 });
-    res.json({ jobInfos });
-  } catch (error) {
-    console.error("Error fetching job infos:", error.message);
-    res.status(500).json({ message: "Internal Server Error" });
-  }
-}
-
-// POST /api/mock-interview/job-infos
-export async function createJobInfo(req, res) {
-  try {
-    const clerkUserId = req.auth().userId;
-    const { name, title, experienceLevel, description } = req.body;
-
-    if (!name || !experienceLevel || !description) {
-      return res.status(400).json({ message: "name, experienceLevel, and description are required" });
-    }
-
-    const jobInfo = await MockJobInfo.create({
-      clerkUserId,
-      name,
-      title: title || null,
-      experienceLevel,
-      description,
-    });
-
-    res.status(201).json({ jobInfo });
-  } catch (error) {
-    console.error("Error creating job info:", error.message);
-    res.status(500).json({ message: "Internal Server Error" });
-  }
-}
-
-// PUT /api/mock-interview/job-infos/:id
-export async function updateJobInfo(req, res) {
-  try {
-    const clerkUserId = req.auth().userId;
-    const { id } = req.params;
-    const { name, title, experienceLevel, description } = req.body;
-
-    const jobInfo = await MockJobInfo.findOneAndUpdate(
-      { _id: id, clerkUserId },
-      { name, title: title || null, experienceLevel, description },
-      { new: true }
-    );
-
-    if (!jobInfo) return res.status(404).json({ message: "Job info not found" });
-
-    res.json({ jobInfo });
-  } catch (error) {
-    console.error("Error updating job info:", error.message);
-    res.status(500).json({ message: "Internal Server Error" });
-  }
-}
-
-// GET /api/mock-interview/job-infos/:id
-export async function getJobInfoById(req, res) {
-  try {
-    const clerkUserId = req.auth().userId;
-    const { id } = req.params;
-
-    const jobInfo = await MockJobInfo.findOne({ _id: id, clerkUserId });
-    if (!jobInfo) return res.status(404).json({ message: "Job info not found" });
-
-    res.json({ jobInfo });
-  } catch (error) {
-    console.error("Error fetching job info:", error.message);
-    res.status(500).json({ message: "Internal Server Error" });
-  }
-}
-
 // POST /api/mock-interview/interviews
 export async function createInterview(req, res) {
   try {
     const clerkUserId = req.auth().userId;
     const { jobInfoId } = req.body;
 
-    const jobInfo = await MockJobInfo.findOne({ _id: jobInfoId, clerkUserId });
+    const jobInfo = await JobInfo.findOne({ _id: jobInfoId, clerkUserId });
     if (!jobInfo) return res.status(404).json({ message: "Job info not found" });
 
     const interview = await MockInterview.create({ jobInfoId });
@@ -143,7 +68,7 @@ export async function getInterviewsByJobInfo(req, res) {
     const clerkUserId = req.auth().userId;
     const { jobInfoId } = req.params;
 
-    const jobInfo = await MockJobInfo.findOne({ _id: jobInfoId, clerkUserId });
+    const jobInfo = await JobInfo.findOne({ _id: jobInfoId, clerkUserId });
     if (!jobInfo) return res.status(404).json({ message: "Job info not found" });
 
     const interviews = await MockInterview.find({
@@ -225,7 +150,6 @@ export async function generateFeedback(req, res) {
       return res.status(400).json({ message: "Interview has not been completed yet" });
     }
 
-    // Fetch chat messages from Hume
     const client = new HumeClient({ apiKey: ENV.HUME_API_KEY });
     const allChatEvents = [];
     const chatEventsIterator = await client.empathicVoice.chats.listChatEvents(
@@ -236,7 +160,6 @@ export async function generateFeedback(req, res) {
       allChatEvents.push(chatEvent);
     }
 
-    // Format messages for Gemini (same as old project)
     const formattedMessages = allChatEvents
       .map((message) => {
         if (message.type !== "USER_MESSAGE" && message.type !== "AGENT_MESSAGE") return null;

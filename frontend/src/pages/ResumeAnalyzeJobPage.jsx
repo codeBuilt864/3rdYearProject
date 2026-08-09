@@ -25,7 +25,7 @@ function ResumeAnalyzeJobPage() {
     async function load() {
       try {
         const [jobRes, analysesRes] = await Promise.all([
-          axiosInstance.get(`/api/resume-analyzer/job-infos/${jobInfoId}`),
+          axiosInstance.get(`/api/job-descriptions/${jobInfoId}`),
           axiosInstance.get(`/api/resume-analyzer/analyses/by-job/${jobInfoId}`),
         ]);
         setJobInfo(jobRes.data.jobInfo);

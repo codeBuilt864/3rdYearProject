@@ -4,7 +4,7 @@ const mockInterviewSchema = new mongoose.Schema(
   {
     jobInfoId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "MockJobInfo",
+      ref: "JobInfo",
       required: true,
     },
     duration: { type: String, default: "00:00:00" },

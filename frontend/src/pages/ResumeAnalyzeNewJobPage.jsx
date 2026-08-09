@@ -1,14 +1,8 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router";
 import { ArrowLeftIcon, Loader2Icon } from "lucide-react";
 import Navbar from "../components/Navbar";
 import axiosInstance from "../lib/axios";
-
-const EXPERIENCE_LABELS = {
-  junior: "Junior",
-  "mid-level": "Mid-level",
-  senior: "Senior",
-};
 
 function ResumeAnalyzeNewJobPage() {
   const navigate = useNavigate();
@@ -19,31 +13,12 @@ function ResumeAnalyzeNewJobPage() {
     description: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [mockJobInfos, setMockJobInfos] = useState([]);
-  const [selectedMockId, setSelectedMockId] = useState(null);
-
-  useEffect(() => {
-    axiosInstance
-      .get("/api/mock-interview/job-infos")
-      .then(({ data }) => setMockJobInfos(data.jobInfos ?? []))
-      .catch(console.error);
-  }, []);
-
-  function handlePickMockJob(jobInfo) {
-    setSelectedMockId(jobInfo._id);
-    setForm({
-      name: jobInfo.name,
-      title: jobInfo.title ?? "",
-      experienceLevel: jobInfo.experienceLevel,
-      description: jobInfo.description,
-    });
-  }
 
   async function handleSubmit(e) {
     e.preventDefault();
     setIsSubmitting(true);
     try {
-      const { data } = await axiosInstance.post("/api/resume-analyzer/job-infos", {
+      const { data } = await axiosInstance.post("/api/job-descriptions", {
         ...form,
         title: form.title || null,
       });
@@ -71,33 +46,6 @@ function ResumeAnalyzeNewJobPage() {
         <p className="text-white/60">
           Enter the job you're applying for. The AI will use this to analyze your resume.
         </p>
-
-        {/* Import from mock interview */}
-        {mockJobInfos.length > 0 && (
-          <div className="bg-[#071025] border border-[#7B5CFF]/20 rounded-2xl p-6 space-y-3">
-            <p className="text-sm font-semibold text-white/70">
-              Import from Mock Interview
-            </p>
-            <div className="flex flex-wrap gap-2">
-              {mockJobInfos.map((j) => (
-                <button
-                  key={j._id}
-                  type="button"
-                  onClick={() => handlePickMockJob(j)}
-                  className={`px-3 py-2 rounded-xl text-sm font-medium border transition-all ${
-                    selectedMockId === j._id
-                      ? "bg-[#7B5CFF] border-[#7B5CFF] text-white"
-                      : "bg-[#7B5CFF]/10 border-[#7B5CFF]/30 text-white/70 hover:border-[#7B5CFF]/60 hover:text-white"
-                  }`}
-                >
-                  <span>{j.name}</span>
-                  <span className="ml-2 text-xs opacity-60">{EXPERIENCE_LABELS[j.experienceLevel]}</span>
-                </button>
-              ))}
-            </div>
-            <p className="text-xs text-white/40">Clicking a job pre-fills the form below. You can edit before saving.</p>
-          </div>
-        )}
 
         <div className="bg-[#071025] border border-[#7B5CFF]/20 rounded-2xl p-8">
           <form onSubmit={handleSubmit} className="space-y-6">

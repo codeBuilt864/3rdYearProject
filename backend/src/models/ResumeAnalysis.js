@@ -22,7 +22,7 @@ const resumeAnalysisSchema = new mongoose.Schema(
   {
     jobInfoId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "ResumeJobInfo",
+      ref: "JobInfo",
       required: true,
     },
     fileName: { type: String, default: null },

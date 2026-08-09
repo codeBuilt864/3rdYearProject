@@ -18,7 +18,7 @@ function MockInterviewNewJobPage() {
     e.preventDefault();
     setIsSubmitting(true);
     try {
-      const { data } = await axiosInstance.post("/api/mock-interview/job-infos", {
+      const { data } = await axiosInstance.post("/api/job-descriptions", {
         ...form,
         title: form.title || null,
       });

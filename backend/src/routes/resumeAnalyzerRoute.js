@@ -2,10 +2,6 @@ import express from "express";
 import multer from "multer";
 import { requireAuth } from "@clerk/express";
 import {
-  getJobInfos,
-  createJobInfo,
-  getJobInfoById,
-  updateJobInfo,
   getAnalysesByJobInfo,
   getAnalysisById,
   createAnalysis,
@@ -28,11 +24,6 @@ const upload = multer({
 });
 
 router.use(requireAuth());
-
-router.get("/job-infos", getJobInfos);
-router.post("/job-infos", createJobInfo);
-router.get("/job-infos/:id", getJobInfoById);
-router.put("/job-infos/:id", updateJobInfo);
 
 router.get("/analyses/by-job/:jobInfoId", getAnalysesByJobInfo);
 router.get("/analyses/:id", getAnalysisById);

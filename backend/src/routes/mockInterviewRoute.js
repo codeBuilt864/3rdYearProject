@@ -2,10 +2,6 @@ import express from "express";
 import { requireAuth } from "@clerk/express";
 import {
   getHumeToken,
-  getJobInfos,
-  createJobInfo,
-  updateJobInfo,
-  getJobInfoById,
   createInterview,
   updateInterview,
   getInterviewsByJobInfo,
@@ -19,11 +15,6 @@ const router = express.Router();
 router.use(requireAuth());
 
 router.get("/token", getHumeToken);
-
-router.get("/job-infos", getJobInfos);
-router.post("/job-infos", createJobInfo);
-router.get("/job-infos/:id", getJobInfoById);
-router.put("/job-infos/:id", updateJobInfo);
 
 router.post("/interviews", createInterview);
 router.patch("/interviews/:id", updateInterview);
