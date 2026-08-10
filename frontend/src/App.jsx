@@ -17,6 +17,10 @@ import MockInterviewNewJobPage from "./pages/MockInterviewNewJobPage";
 import MockInterviewJobPage from "./pages/MockInterviewJobPage";
 import MockInterviewCallPage from "./pages/MockInterviewCallPage";
 import MockInterviewDetailPage from "./pages/MockInterviewDetailPage";
+import QuestionsPage from "./pages/QuestionsPage";
+import QuestionsNewJobPage from "./pages/QuestionsNewJobPage";
+import QuestionsJobPage from "./pages/QuestionsJobPage";
+import QuestionsPracticePage from "./pages/QuestionsPracticePage";
 import ITCompaniesPage from "./pages/ITCompaniesPage";
 import JobHuntingStrategiesPage from "./pages/JobHuntingStrategiesPage";
 
@@ -58,6 +62,11 @@ function App() {
         <Route path="/mockinterview/:jobInfoId" element={isSignedIn? <MockInterviewJobPage/> : <Navigate to={"/"}/>}/>
         <Route path="/mockinterview/:jobInfoId/interviews/new" element={isSignedIn? <MockInterviewCallPage/> : <Navigate to={"/"}/>}/>
         <Route path="/mockinterview/:jobInfoId/interviews/:interviewId" element={isSignedIn? <MockInterviewDetailPage/> : <Navigate to={"/"}/>}/>
+
+        <Route path="/questions" element={isSignedIn? <QuestionsPage/> : <Navigate to={"/"}/>}/>
+        <Route path="/questions/new" element={isSignedIn? <QuestionsNewJobPage/> : <Navigate to={"/"}/>}/>
+        <Route path="/questions/:jobInfoId" element={isSignedIn? <QuestionsJobPage/> : <Navigate to={"/"}/>}/>
+        <Route path="/questions/:jobInfoId/practice" element={isSignedIn? <QuestionsPracticePage/> : <Navigate to={"/"}/>}/>
 
         <Route path="/companies" element={isSignedIn? <ITCompaniesPage/> : <Navigate to={"/"}/>}/>
 
