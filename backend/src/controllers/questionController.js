@@ -1,5 +1,5 @@
 import { createGoogleGenerativeAI } from "@ai-sdk/google";
-import { streamText, pipeDataStreamToResponse, createDataStream } from "ai";
+import { streamText, pipeDataStreamToResponse } from "ai";
 import { ENV } from "../lib/env.js";
 import JobInfo from "../models/JobDescription.js";
 import Question from "../models/Question.js";
@@ -7,7 +7,6 @@ import Question from "../models/Question.js";
 const google = createGoogleGenerativeAI({ apiKey: ENV.GEMINI_API_KEY });
 
 // POST /api/questions/generate-question
-// body: { jobInfoId, difficulty }
 export async function generateQuestion(req, res) {
   try {
     const clerkUserId = req.auth().userId;
@@ -33,7 +32,7 @@ export async function generateQuestion(req, res) {
     ]);
 
     pipeDataStreamToResponse(res, {
-      execute: async (dataStream) => {
+      execute: async (writer) => {
         const result = streamText({
           model: google("gemini-2.5-flash"),
           messages: [
@@ -57,12 +56,15 @@ Guidelines:
 - The question should be formatted as markdown.
 - Stop generating output as soon as you have provided the full question.`,
           onFinish: async ({ text }) => {
-            const question = await Question.create({ jobInfoId, text, difficulty });
-            dataStream.writeData({ questionId: question._id.toString() });
+            const saved = await Question.create({ jobInfoId, text, difficulty });
+            writer.writeData({ questionId: saved._id.toString() });
           },
         });
-
-        result.mergeIntoDataStream(dataStream, { sendUsage: false });
+        result.mergeIntoDataStream(writer, { sendUsage: false });
+      },
+      onError: (err) => {
+        console.error("Stream error (generate-question):", err);
+        return "Failed to generate question";
       },
     });
   } catch (error) {
@@ -74,7 +76,6 @@ Guidelines:
 }
 
 // POST /api/questions/generate-feedback
-// body: { questionId, answer }
 export async function generateFeedback(req, res) {
   try {
     const clerkUserId = req.auth().userId;
@@ -91,7 +92,7 @@ export async function generateFeedback(req, res) {
     }
 
     pipeDataStreamToResponse(res, {
-      execute: (dataStream) => {
+      execute: (writer) => {
         const result = streamText({
           model: google("gemini-2.5-flash"),
           prompt: answer.trim(),
@@ -118,8 +119,11 @@ Output Format (strictly follow this structure):
 ## Correct Answer
 <The full correct answer as markdown>`,
         });
-
-        result.mergeIntoDataStream(dataStream, { sendUsage: false });
+        result.mergeIntoDataStream(writer, { sendUsage: false });
+      },
+      onError: (err) => {
+        console.error("Stream error (generate-feedback):", err);
+        return "Failed to generate feedback";
       },
     });
   } catch (error) {

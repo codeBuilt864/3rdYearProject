@@ -1,62 +1,101 @@
-import { useMemo, useState } from "react";
+import { useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import { ArrowLeftIcon, Loader2Icon } from "lucide-react";
-import { useCompletion } from "@ai-sdk/react";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
+import { useAuth } from "@clerk/clerk-react";
 import Navbar from "../components/Navbar";
 import MarkdownRenderer from "../components/MarkdownRenderer";
 
 const DIFFICULTIES = ["easy", "medium", "hard"];
+const API_URL = import.meta.env.VITE_API_URL;
 
 // status: "init" | "awaiting-answer" | "awaiting-next"
 function QuestionsPracticePage() {
   const { jobInfoId } = useParams();
   const navigate = useNavigate();
+  const { getToken } = useAuth();
   const [status, setStatus] = useState("init");
   const [answer, setAnswer] = useState("");
+  const [question, setQuestion] = useState("");
+  const [feedback, setFeedback] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const questionIdRef = useRef(null);
 
-  const {
-    complete: generateQuestion,
-    completion: question,
-    setCompletion: setQuestion,
-    isLoading: isGeneratingQuestion,
-    data: questionData,
-  } = useCompletion({
-    api: "/api/questions/generate-question",
-    onFinish: () => setStatus("awaiting-answer"),
-    onError: (err) => console.error("Question error:", err),
-  });
+  async function streamResponse(url, body, onChunk, onDone) {
+    setIsLoading(true);
+    try {
+      const token = await getToken();
+      const res = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(body),
+      });
 
-  const {
-    complete: generateFeedback,
-    completion: feedback,
-    setCompletion: setFeedback,
-    isLoading: isGeneratingFeedback,
-  } = useCompletion({
-    api: "/api/questions/generate-feedback",
-    onFinish: () => setStatus("awaiting-next"),
-    onError: (err) => console.error("Feedback error:", err),
-  });
+      if (!res.ok) {
+        const text = await res.text();
+        console.error("Stream error:", text);
+        return;
+      }
 
-  const questionId = useMemo(() => {
-    const last = questionData?.at(-1);
-    if (!last || typeof last !== "object") return null;
-    return last.questionId ?? null;
-  }, [questionData]);
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = "";
 
-  const isLoading = isGeneratingQuestion || isGeneratingFeedback;
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split("\n");
+        buffer = lines.pop();
+        for (const line of lines) {
+          if (line.startsWith("0:")) {
+            // text chunk
+            const text = JSON.parse(line.slice(2));
+            onChunk(text);
+          } else if (line.startsWith("2:")) {
+            // data chunk — array of objects
+            const data = JSON.parse(line.slice(2));
+            if (Array.isArray(data)) {
+              for (const item of data) {
+                if (item.questionId) questionIdRef.current = item.questionId;
+              }
+            }
+          }
+        }
+      }
+      onDone();
+    } catch (err) {
+      console.error("Streaming failed:", err);
+    } finally {
+      setIsLoading(false);
+    }
+  }
 
   function handleGenerateQuestion(difficulty) {
     setQuestion("");
     setFeedback("");
     setAnswer("");
     setStatus("init");
-    generateQuestion(difficulty, { body: { jobInfoId, difficulty } });
+    questionIdRef.current = null;
+    streamResponse(
+      `${API_URL}/api/questions/generate-question`,
+      { jobInfoId, difficulty },
+      (chunk) => setQuestion((prev) => prev + chunk),
+      () => setStatus("awaiting-answer")
+    );
   }
 
   function handleAnswer() {
-    if (!answer.trim() || !questionId) return;
-    generateFeedback(answer.trim(), { body: { questionId, answer: answer.trim() } });
+    if (!answer.trim() || !questionIdRef.current) return;
+    streamResponse(
+      `${API_URL}/api/questions/generate-feedback`,
+      { questionId: questionIdRef.current, answer: answer.trim() },
+      (chunk) => setFeedback((prev) => prev + chunk),
+      () => setStatus("awaiting-next")
+    );
   }
 
   function handleSkip() {
@@ -64,6 +103,7 @@ function QuestionsPracticePage() {
     setFeedback("");
     setAnswer("");
     setStatus("init");
+    questionIdRef.current = null;
   }
 
   return (
@@ -93,7 +133,7 @@ function QuestionsPracticePage() {
               </button>
               <button
                 onClick={handleAnswer}
-                disabled={isLoading || !answer.trim() || !questionId}
+                disabled={isLoading || !answer.trim() || !questionIdRef.current}
                 className="px-4 py-2 rounded-xl bg-gradient-to-r from-[#7B5CFF] to-[#A66CFF] text-white disabled:from-gray-600 disabled:to-gray-600 disabled:cursor-not-allowed transition-all text-sm font-semibold hover:scale-[1.02]"
               >
                 {isLoading ? <Loader2Icon className="size-4 animate-spin" /> : "Answer"}
