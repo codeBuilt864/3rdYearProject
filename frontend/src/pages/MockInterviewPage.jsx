@@ -19,7 +19,7 @@ function MockInterviewPage() {
 
   async function fetchJobInfos() {
     try {
-      const { data } = await axiosInstance.get("/api/mock-interview/job-infos");
+      const { data } = await axiosInstance.get("/api/job-descriptions");
       setJobInfos(data.jobInfos ?? []);
     } catch (err) {
       console.error(err);

@@ -91,7 +91,7 @@ function ResumeAnalyzeDetailPage() {
     async function load() {
       try {
         if (isNew) {
-          const { data } = await axiosInstance.get(`/api/resume-analyzer/job-infos/${jobInfoId}`);
+          const { data } = await axiosInstance.get(`/api/job-descriptions/${jobInfoId}`);
           setJobInfo(data.jobInfo);
         } else {
           const { data } = await axiosInstance.get(`/api/resume-analyzer/analyses/${analysisId}`);

@@ -168,7 +168,7 @@ function MockInterviewCallPage() {
       try {
         const [tokenRes, jobRes] = await Promise.all([
           axiosInstance.get("/api/mock-interview/token"),
-          axiosInstance.get(`/api/mock-interview/job-infos/${jobInfoId}`),
+          axiosInstance.get(`/api/job-descriptions/${jobInfoId}`),
         ]);
         setAccessToken(tokenRes.data.accessToken);
         setJobInfo(jobRes.data.jobInfo);

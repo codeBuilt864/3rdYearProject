@@ -13,6 +13,8 @@ import sessionRoutes from "./routes/sessionRoute.js";
 import resumeRoutes from "./routes/resumeRoute.js";
 import mockInterviewRoutes from "./routes/mockInterviewRoute.js";
 import resumeAnalyzerRoutes from "./routes/resumeAnalyzerRoute.js";
+import jobDescriptionRoutes from "./routes/jobDescriptionRoute.js";
+import webhookRoutes from "./routes/webhookRoute.js";
 
 import dns from "dns";
 
@@ -20,6 +22,9 @@ dns.setServers(["1.1.1.1", "8.8.8.8"]);
 
 const app = express();
 const __dirname = path.resolve();
+
+// Webhook route must be before express.json() to preserve raw body for signature verification
+app.use("/api/webhooks", webhookRoutes);
 
 //middleware
 app.use(morgan("dev"));
@@ -30,6 +35,7 @@ app.use("/api/inngest", serve({ client: inngest, functions }));
 app.use("/api/chat", chatRoutes);
 app.use("/api/sessions", sessionRoutes);
 app.use("/api/resume", resumeRoutes);
+app.use("/api/job-descriptions", jobDescriptionRoutes);
 app.use("/api/mock-interview", mockInterviewRoutes);
 app.use("/api/resume-analyzer", resumeAnalyzerRoutes);
 

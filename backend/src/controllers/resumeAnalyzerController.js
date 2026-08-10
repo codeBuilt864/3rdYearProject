@@ -2,7 +2,7 @@ import { createGoogleGenerativeAI } from "@ai-sdk/google";
 import { generateObject } from "ai";
 import { z } from "zod";
 import { ENV } from "../lib/env.js";
-import ResumeJobInfo from "../models/ResumeJobInfo.js";
+import JobInfo from "../models/JobDescription.js";
 import ResumeAnalysis from "../models/ResumeAnalysis.js";
 
 const google = createGoogleGenerativeAI({ apiKey: ENV.GEMINI_API_KEY });
@@ -28,82 +28,12 @@ const aiAnalyzeSchema = z.object({
   other: categorySchema,
 });
 
-// GET /api/resume-analyzer/job-infos
-export async function getJobInfos(req, res) {
-  try {
-    const clerkUserId = req.auth().userId;
-    const jobInfos = await ResumeJobInfo.find({ clerkUserId }).sort({ updatedAt: -1 });
-    res.json({ jobInfos });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Internal Server Error" });
-  }
-}
-
-// POST /api/resume-analyzer/job-infos
-export async function createJobInfo(req, res) {
-  try {
-    const clerkUserId = req.auth().userId;
-    const { name, title, experienceLevel, description } = req.body;
-
-    if (!name || !experienceLevel || !description) {
-      return res.status(400).json({ message: "name, experienceLevel, and description are required" });
-    }
-
-    const jobInfo = await ResumeJobInfo.create({
-      clerkUserId,
-      name,
-      title: title || null,
-      experienceLevel,
-      description,
-    });
-
-    res.status(201).json({ jobInfo });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Internal Server Error" });
-  }
-}
-
-// GET /api/resume-analyzer/job-infos/:id
-export async function getJobInfoById(req, res) {
-  try {
-    const clerkUserId = req.auth().userId;
-    const jobInfo = await ResumeJobInfo.findOne({ _id: req.params.id, clerkUserId });
-    if (!jobInfo) return res.status(404).json({ message: "Job info not found" });
-    res.json({ jobInfo });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Internal Server Error" });
-  }
-}
-
-// PUT /api/resume-analyzer/job-infos/:id
-export async function updateJobInfo(req, res) {
-  try {
-    const clerkUserId = req.auth().userId;
-    const { name, title, experienceLevel, description } = req.body;
-
-    const jobInfo = await ResumeJobInfo.findOneAndUpdate(
-      { _id: req.params.id, clerkUserId },
-      { name, title: title || null, experienceLevel, description },
-      { new: true }
-    );
-
-    if (!jobInfo) return res.status(404).json({ message: "Job info not found" });
-    res.json({ jobInfo });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Internal Server Error" });
-  }
-}
-
 // GET /api/resume-analyzer/analyses/by-job/:jobInfoId
 export async function getAnalysesByJobInfo(req, res) {
   try {
     const clerkUserId = req.auth().userId;
-    const jobInfo = await ResumeJobInfo.findOne({ _id: req.params.jobInfoId, clerkUserId });
-    if (!jobInfo) return res.status(404).json({ message: "Job info not found" });
+    const jobInfo = await JobInfo.findOne({ _id: req.params.jobInfoId, clerkUserId });
+    if (!jobInfo) return res.status(404).json({ message: "Job description not found" });
 
     const analyses = await ResumeAnalysis.find({ jobInfoId: req.params.jobInfoId }).sort({ createdAt: -1 });
     res.json({ analyses });
@@ -138,13 +68,11 @@ export async function createAnalysis(req, res) {
     if (!req.file) return res.status(400).json({ message: "Resume file is required" });
     if (!jobInfoId) return res.status(400).json({ message: "jobInfoId is required" });
 
-    const jobInfo = await ResumeJobInfo.findOne({ _id: jobInfoId, clerkUserId });
-    if (!jobInfo) return res.status(404).json({ message: "Job info not found" });
+    const jobInfo = await JobInfo.findOne({ _id: jobInfoId, clerkUserId });
+    if (!jobInfo) return res.status(404).json({ message: "Job description not found" });
 
-    // Create analysis record first
     const analysis = await ResumeAnalysis.create({ jobInfoId, fileName: req.file.originalname });
 
-    // Build file data for Gemini
     const mimeType = req.file.mimetype;
     const fileBuffer = req.file.buffer;
 
@@ -172,7 +100,6 @@ Also return an overallScore (1-10).
 
 Refer to the candidate as "you". Be constructive and actionable.`;
 
-    // Convert Buffer to ArrayBuffer exactly as the old project does
     const arrayBuffer = fileBuffer.buffer.slice(
       fileBuffer.byteOffset,
       fileBuffer.byteOffset + fileBuffer.byteLength
@@ -196,7 +123,6 @@ Refer to the candidate as "you". Be constructive and actionable.`;
       ],
     });
 
-    // Save results
     analysis.overallScore = object.overallScore;
     analysis.ats = object.ats;
     analysis.jobMatch = object.jobMatch;

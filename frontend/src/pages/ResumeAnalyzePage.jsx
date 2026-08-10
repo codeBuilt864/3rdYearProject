@@ -19,7 +19,7 @@ function ResumeAnalyzePage() {
 
   async function fetchJobInfos() {
     try {
-      const { data } = await axiosInstance.get("/api/resume-analyzer/job-infos");
+      const { data } = await axiosInstance.get("/api/job-descriptions");
       setJobInfos(data.jobInfos ?? []);
     } catch (err) {
       console.error(err);

@@ -30,7 +30,7 @@ function MockInterviewJobPage() {
     async function load() {
       try {
         const [jobRes, interviewsRes] = await Promise.all([
-          axiosInstance.get(`/api/mock-interview/job-infos/${jobInfoId}`),
+          axiosInstance.get(`/api/job-descriptions/${jobInfoId}`),
           axiosInstance.get(`/api/mock-interview/interviews/by-job/${jobInfoId}`),
         ]);
         setJobInfo(jobRes.data.jobInfo);
