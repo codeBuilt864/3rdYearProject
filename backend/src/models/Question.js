@@ -7,7 +7,7 @@ const questionSchema = new mongoose.Schema(
       ref: "JobInfo",
       required: true,
     },
-    text: { type: String, required: true },
+    questionText: { type: String, required: true },
     difficulty: {
       type: String,
       enum: ["easy", "medium", "hard"],

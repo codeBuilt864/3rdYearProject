@@ -24,11 +24,11 @@ export async function generateQuestion(req, res) {
 
     const previousQuestions = await Question.find({ jobInfoId })
       .sort({ createdAt: 1 })
-      .select("text difficulty");
+      .select("questionText difficulty");
 
     const previousMessages = previousQuestions.flatMap((q) => [
       { role: "user", content: q.difficulty },
-      { role: "assistant", content: q.text },
+      { role: "assistant", content: q.questionText },
     ]);
 
     pipeDataStreamToResponse(res, {
@@ -56,7 +56,7 @@ Guidelines:
 - The question should be formatted as markdown.
 - Stop generating output as soon as you have provided the full question.`,
           onFinish: async ({ text }) => {
-            const saved = await Question.create({ jobInfoId, text, difficulty });
+            const saved = await Question.create({ jobInfoId, questionText: text, difficulty });
             writer.writeData({ questionId: saved._id.toString() });
           },
         });
@@ -100,7 +100,7 @@ export async function generateFeedback(req, res) {
 
 The original question was:
 \`\`\`
-${question.text}
+${question.questionText}
 \`\`\`
 
 Instructions:
