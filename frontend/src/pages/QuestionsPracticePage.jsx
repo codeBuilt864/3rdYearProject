@@ -107,7 +107,7 @@ function QuestionsPracticePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#0F0C29] via-[#1B1443] to-[#3A1C71] flex flex-col">
+    <div className="h-screen bg-gradient-to-br from-[#0F0C29] via-[#1B1443] to-[#3A1C71] flex flex-col overflow-hidden">
       <Navbar />
 
       {/* Header bar */}
