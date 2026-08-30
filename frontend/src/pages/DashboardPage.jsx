@@ -28,7 +28,7 @@ function DashboardPage() {
               <h2 className="text-lg font-bold text-white mb-4">
                 Quick Actions
               </h2>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
                 <div
                   className="p-4 rounded-lg bg-[#0f0c1a]/50 border border-[#7B5CFF]/10 hover:scale-105 transition-transform cursor-pointer"
                   onClick={() => navigate("/resumeanalyze")}
@@ -51,6 +51,18 @@ function DashboardPage() {
                   <p className="text-sm text-white/70">
                     Practice rounds with AI feedback to boost interview
                     readiness.
+                  </p>
+                </div>
+
+                <div
+                  className="p-4 rounded-lg bg-[#0f0c1a]/50 border border-[#7B5CFF]/10 hover:scale-105 transition-transform cursor-pointer"
+                  onClick={() => navigate("/questions")}
+                >
+                  <h4 className="font-semibold text-white mb-2">
+                    Technical Questions
+                  </h4>
+                  <p className="text-sm text-white/70">
+                    AI-generated questions with instant feedback on your answers.
                   </p>
                 </div>
 

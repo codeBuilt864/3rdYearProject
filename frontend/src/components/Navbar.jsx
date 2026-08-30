@@ -7,6 +7,7 @@ import {
   MicIcon,
   BriefcaseIcon,
   TrendingUpIcon,
+  BrainIcon,
 } from "lucide-react";
 import { UserButton } from "@clerk/clerk-react";
 
@@ -91,19 +92,19 @@ function Navbar() {
 
         <div className="flex items-center gap-1">
           <Link
-            to={"/problems"}
+            to={"/questions"}
             className={`px-3 py-2 rounded-lg transition-all duration-200 
               ${
-                isActive("/problems")
+                location.pathname.startsWith("/questions")
                   ? "bg-[#7B5CFF] text-white shadow-lg shadow-[#7B5CFF]/40"
                   : "hover:bg-[#7B5CFF]/20 text-white/70 hover:text-white"
               }
               `}
           >
             <div className="flex items-center gap-x-2">
-              <BookOpenIcon className="size-4" />
+              <BrainIcon className="size-4" />
               <span className="font-medium hidden sm:inline text-sm">
-                Coding
+                Questions
               </span>
             </div>
           </Link>
