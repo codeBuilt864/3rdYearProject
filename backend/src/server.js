@@ -16,6 +16,7 @@ import resumeAnalyzerRoutes from "./routes/resumeAnalyzerRoute.js";
 import jobDescriptionRoutes from "./routes/jobDescriptionRoute.js";
 import questionRoutes from "./routes/questionRoute.js";
 import jobsRoutes from "./routes/jobsRoute.js";
+import savedJobRoutes from "./routes/savedJobRoute.js";
 import webhookRoutes from "./routes/webhookRoute.js";
 
 import dns from "dns";
@@ -42,6 +43,7 @@ app.use("/api/mock-interview", mockInterviewRoutes);
 app.use("/api/resume-analyzer", resumeAnalyzerRoutes);
 app.use("/api/questions", questionRoutes);
 app.use("/api/jobs", jobsRoutes);
+app.use("/api/saved-jobs", savedJobRoutes);
 
 app.get("/health", (req, res) => {
   res.status(200).json({ msg: "api is up and running" });

@@ -1,4 +1,4 @@
-import { MapPinIcon, BriefcaseIcon, MonitorIcon, CalendarIcon, ExternalLinkIcon } from "lucide-react";
+import { MapPinIcon, BriefcaseIcon, MonitorIcon, CalendarIcon, ExternalLinkIcon, BookmarkIcon } from "lucide-react";
 
 function formatPostedDate(dateStr) {
   if (!dateStr) return null;
@@ -22,7 +22,7 @@ const SOURCE_COLORS = {
   "ITPro.lk": "bg-emerald-500/20 text-emerald-300 border-emerald-500/30",
 };
 
-function JobCard({ job, onClick }) {
+function JobCard({ job, onClick, isSaved = false, onToggleSave }) {
   const postedLabel = formatPostedDate(job.postedDate);
   const sourceStyle = SOURCE_COLORS[job.source] || "bg-white/10 text-white/60 border-white/20";
 
@@ -57,9 +57,22 @@ function JobCard({ job, onClick }) {
           <p className="text-white/60 text-sm mt-0.5 truncate">{job.company}</p>
         </div>
 
-        <span className={`text-xs px-2 py-0.5 rounded-full border flex-shrink-0 ${sourceStyle}`}>
-          {job.source}
-        </span>
+        <div className="flex items-center gap-2 flex-shrink-0">
+          <span className={`text-xs px-2 py-0.5 rounded-full border ${sourceStyle}`}>
+            {job.source}
+          </span>
+          {onToggleSave && (
+            <button
+              onClick={(e) => { e.stopPropagation(); onToggleSave(job); }}
+              className="p-1.5 rounded-lg hover:bg-[#7B5CFF]/20 transition-colors"
+              title={isSaved ? "Remove from saved" : "Save job"}
+            >
+              <BookmarkIcon
+                className={`size-4 transition-colors ${isSaved ? "fill-[#7B5CFF] text-[#7B5CFF]" : "text-white/40 hover:text-white/70"}`}
+              />
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Meta: location, work mode, employment type */}

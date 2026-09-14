@@ -1,7 +1,8 @@
 import { useState, useEffect, useCallback } from "react";
 import { useSearchParams } from "react-router";
 import { useQuery } from "@tanstack/react-query";
-import { SearchIcon, RefreshCwIcon, ChevronDownIcon } from "lucide-react";
+import { SearchIcon, RefreshCwIcon, ChevronDownIcon, BookmarkIcon, BriefcaseIcon } from "lucide-react";
+import toast from "react-hot-toast";
 import Navbar from "../components/Navbar";
 import JobCard from "../components/Jobs/JobCard";
 import JobCardSkeleton from "../components/Jobs/JobCardSkeleton";
@@ -26,10 +27,54 @@ function useDebounce(value, delay) {
   return debounced;
 }
 
+function normalizeSaved(saved) {
+  return {
+    id: saved.jobId, title: saved.title, company: saved.company,
+    companyLogo: saved.companyLogo, location: saved.location,
+    employmentType: saved.employmentType, workMode: saved.workMode,
+    salary: saved.salary, skills: saved.skills || [],
+    description: saved.description, postedDate: saved.postedDate,
+    applyUrl: saved.applyUrl, source: saved.source,
+  };
+}
+
 function JobsPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [selectedJob, setSelectedJob] = useState(null);
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
+  const [savedJobIds, setSavedJobIds] = useState(new Set());
+  const [savedJobs, setSavedJobs] = useState([]);
+  const [view, setView] = useState("all"); // "all" | "saved"
+
+  useEffect(() => {
+    axiosInstance.get("/api/saved-jobs")
+      .then(({ data }) => {
+        setSavedJobIds(new Set(data.savedJobs.map((j) => j.jobId)));
+        setSavedJobs(data.savedJobs);
+      })
+      .catch(() => {});
+  }, []);
+
+  async function handleToggleSave(job) {
+    const isSaved = savedJobIds.has(job.id);
+    if (isSaved) {
+      await axiosInstance.delete(`/api/saved-jobs/${encodeURIComponent(job.id)}`);
+      setSavedJobIds((prev) => { const next = new Set(prev); next.delete(job.id); return next; });
+      setSavedJobs((prev) => prev.filter((j) => j.jobId !== job.id));
+      toast.success("Job removed from saved");
+    } else {
+      await axiosInstance.post("/api/saved-jobs", {
+        jobId: job.id, title: job.title, company: job.company,
+        companyLogo: job.companyLogo, location: job.location,
+        employmentType: job.employmentType, workMode: job.workMode,
+        salary: job.salary, skills: job.skills, description: job.description,
+        postedDate: job.postedDate, applyUrl: job.applyUrl, source: job.source,
+      });
+      setSavedJobIds((prev) => new Set(prev).add(job.id));
+      setSavedJobs((prev) => [{ jobId: job.id, ...job }, ...prev]);
+      toast.success("Job saved!");
+    }
+  }
 
   // Read state from URL
   const searchInput = searchParams.get("search") || "";
@@ -43,7 +88,6 @@ function JobsPage() {
   const [localSearch, setLocalSearch] = useState(searchInput);
   const debouncedSearch = useDebounce(localSearch, 500);
 
-  // Sync debounced search to URL
   useEffect(() => {
     setSearchParams(
       (prev) => {
@@ -126,80 +170,112 @@ function JobsPage() {
       <Navbar />
 
       {/* Page header */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-8 pb-4">
-        <h1 className="text-3xl md:text-4xl font-black text-white mb-1">Job Search</h1>
-        <p className="text-white/50 text-sm">Jobs from Findwork and ITPro.lk in one place</p>
-      </div>
-
-      {/* Search bar */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 pb-4">
-        <form onSubmit={handleSearchSubmit} className="flex gap-2">
-          <div className="relative flex-1">
-            <SearchIcon className="absolute left-4 top-1/2 -translate-y-1/2 size-4 text-white/40" />
-            <input
-              type="text"
-              value={localSearch}
-              onChange={(e) => setLocalSearch(e.target.value)}
-              placeholder="Search jobs, skills, or keywords..."
-              className="w-full pl-11 pr-4 py-3 bg-[#071025] border border-[#7B5CFF]/30 rounded-xl text-white placeholder:text-white/30 focus:outline-none focus:border-[#7B5CFF]/60 focus:ring-2 focus:ring-[#7B5CFF]/20 transition-all"
-            />
-          </div>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-8 pb-4 flex items-center justify-between gap-4">
+        <div>
+          <h1 className="text-3xl md:text-4xl font-black text-white mb-1">Job Search</h1>
+          <p className="text-white/50 text-sm">Jobs from Findwork and ITPro.lk in one place</p>
+        </div>
+        <div className="flex items-center gap-1 bg-[#071025] border border-[#7B5CFF]/20 rounded-xl p-1 flex-shrink-0">
           <button
-            type="submit"
-            className="px-5 py-3 bg-gradient-to-r from-[#7B5CFF] to-[#A66CFF] text-white font-bold rounded-xl hover:scale-[1.02] transition-all flex-shrink-0"
+            onClick={() => setView("all")}
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all ${
+              view === "all" ? "bg-[#7B5CFF] text-white" : "text-white/50 hover:text-white"
+            }`}
           >
-            Search
+            <BriefcaseIcon className="size-4" />
+            <span className="hidden sm:inline">All Jobs</span>
           </button>
-        </form>
-      </div>
-
-      {/* Filters + sort row */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 pb-4">
-        {/* Desktop filters */}
-        <div className="hidden md:flex items-center justify-between gap-4">
-          <JobFilters
-            filters={filters}
-            companies={companies}
-            onChange={updateFilter}
-            onClear={clearFilters}
-          />
-          <SortDropdown value={sort} onChange={updateSort} />
-        </div>
-
-        {/* Mobile filters */}
-        <div className="flex md:hidden items-center justify-between gap-2">
-          <JobFilterDrawer
-            filters={filters}
-            companies={companies}
-            onChange={updateFilter}
-            onClear={clearFilters}
-          />
-          <SortDropdown value={sort} onChange={updateSort} />
+          <button
+            onClick={() => setView("saved")}
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all ${
+              view === "saved" ? "bg-[#7B5CFF] text-white" : "text-white/50 hover:text-white"
+            }`}
+          >
+            <BookmarkIcon className={`size-4 ${view === "saved" ? "fill-white" : ""}`} />
+            <span className="hidden sm:inline">Saved</span>
+            {savedJobs.length > 0 && (
+              <span className={`text-xs px-1.5 py-0.5 rounded-full ${view === "saved" ? "bg-white/20" : "bg-[#7B5CFF]/30 text-[#A66CFF]"}`}>
+                {savedJobs.length}
+              </span>
+            )}
+          </button>
         </div>
       </div>
 
-      {/* Results count + source status */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 pb-4 flex items-center justify-between">
-        <p className="text-white/50 text-sm">
-          {isLoading ? (
-            "Searching..."
-          ) : isError ? (
-            "Search failed"
-          ) : (
-            <>
-              <span className="text-white font-semibold">{jobs.length}</span> jobs found
+      {/* Search + filters — only shown in All Jobs view */}
+      {view === "all" && (
+        <>
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 pb-4">
+            <form onSubmit={handleSearchSubmit} className="flex gap-2">
+              <div className="relative flex-1">
+                <SearchIcon className="absolute left-4 top-1/2 -translate-y-1/2 size-4 text-white/40" />
+                <input
+                  type="text"
+                  value={localSearch}
+                  onChange={(e) => setLocalSearch(e.target.value)}
+                  placeholder="Search jobs, skills, or keywords..."
+                  className="w-full pl-11 pr-4 py-3 bg-[#071025] border border-[#7B5CFF]/30 rounded-xl text-white placeholder:text-white/30 focus:outline-none focus:border-[#7B5CFF]/60 focus:ring-2 focus:ring-[#7B5CFF]/20 transition-all"
+                />
+              </div>
+              <button
+                type="submit"
+                className="px-5 py-3 bg-gradient-to-r from-[#7B5CFF] to-[#A66CFF] text-white font-bold rounded-xl hover:scale-[1.02] transition-all flex-shrink-0"
+              >
+                Search
+              </button>
+            </form>
+          </div>
 
-            </>
-          )}
-        </p>
-        {isFetching && !isLoading && (
-          <RefreshCwIcon className="size-4 text-[#7B5CFF] animate-spin" />
-        )}
-      </div>
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 pb-4">
+            <div className="hidden md:flex items-center justify-between gap-4">
+              <JobFilters filters={filters} companies={companies} onChange={updateFilter} onClear={clearFilters} />
+              <SortDropdown value={sort} onChange={updateSort} />
+            </div>
+            <div className="flex md:hidden items-center justify-between gap-2">
+              <JobFilterDrawer filters={filters} companies={companies} onChange={updateFilter} onClear={clearFilters} />
+              <SortDropdown value={sort} onChange={updateSort} />
+            </div>
+          </div>
+
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 pb-4 flex items-center justify-between">
+            <p className="text-white/50 text-sm">
+              {isLoading ? "Searching..." : isError ? "Search failed" : (
+                <><span className="text-white font-semibold">{jobs.length}</span> jobs found</>
+              )}
+            </p>
+            {isFetching && !isLoading && <RefreshCwIcon className="size-4 text-[#7B5CFF] animate-spin" />}
+          </div>
+        </>
+      )}
 
       {/* Job list */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 pb-12">
-        {isLoading ? (
+        {view === "saved" ? (
+          savedJobs.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-20 text-center">
+              <BookmarkIcon className="size-16 text-white/20 mb-4" />
+              <h3 className="text-2xl font-bold text-white mb-2">No saved jobs yet</h3>
+              <p className="text-white/50 mb-6 max-w-sm">
+                Browse jobs and click the bookmark icon to save ones you're interested in.
+              </p>
+              <button
+                onClick={() => setView("all")}
+                className="px-6 py-2.5 bg-gradient-to-r from-[#7B5CFF] to-[#A66CFF] text-white font-bold rounded-xl hover:scale-[1.02] transition-all"
+              >
+                Browse Jobs
+              </button>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+              {savedJobs.map((saved) => {
+                const job = normalizeSaved(saved);
+                return (
+                  <JobCard key={saved.jobId} job={job} onClick={() => setSelectedJob(job)} isSaved={true} onToggleSave={handleToggleSave} />
+                );
+              })}
+            </div>
+          )
+        ) : isLoading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
             {Array.from({ length: 9 }).map((_, i) => (
               <JobCardSkeleton key={i} />
@@ -213,10 +289,9 @@ function JobsPage() {
           <>
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
               {visibleJobs.map((job) => (
-                <JobCard key={job.id} job={job} onClick={() => setSelectedJob(job)} />
+                <JobCard key={job.id} job={job} onClick={() => setSelectedJob(job)} isSaved={savedJobIds.has(job.id)} onToggleSave={handleToggleSave} />
               ))}
             </div>
-
             {hasMore && (
               <div className="flex justify-center mt-8">
                 <button
@@ -232,7 +307,6 @@ function JobsPage() {
         )}
       </div>
 
-      {/* Job details modal */}
       {selectedJob && (
         <JobDetails job={selectedJob} onClose={() => setSelectedJob(null)} />
       )}
