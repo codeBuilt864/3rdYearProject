@@ -22,6 +22,7 @@ import QuestionsNewJobPage from "./pages/QuestionsNewJobPage";
 import QuestionsJobPage from "./pages/QuestionsJobPage";
 import QuestionsPracticePage from "./pages/QuestionsPracticePage";
 import ITCompaniesPage from "./pages/ITCompaniesPage";
+import JobsPage from "./pages/JobsPage";
 import JobHuntingStrategiesPage from "./pages/JobHuntingStrategiesPage";
 
 
@@ -69,6 +70,7 @@ function App() {
         <Route path="/questions/:jobInfoId/practice" element={isSignedIn? <QuestionsPracticePage/> : <Navigate to={"/"}/>}/>
 
         <Route path="/companies" element={isSignedIn? <ITCompaniesPage/> : <Navigate to={"/"}/>}/>
+        <Route path="/jobs" element={isSignedIn? <JobsPage/> : <Navigate to={"/"}/>}/>
 
         <Route path="/strategies" element={isSignedIn? <JobHuntingStrategiesPage/> : <Navigate to={"/"}/>}/>
 
