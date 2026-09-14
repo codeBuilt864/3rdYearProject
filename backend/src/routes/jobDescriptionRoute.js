@@ -5,6 +5,7 @@ import {
   createJobDescription,
   getJobDescriptionById,
   updateJobDescription,
+  deleteJobDescription,
 } from "../controllers/jobDescriptionController.js";
 
 const router = express.Router();
@@ -15,5 +16,6 @@ router.get("/", getJobDescriptions);
 router.post("/", createJobDescription);
 router.get("/:id", getJobDescriptionById);
 router.put("/:id", updateJobDescription);
+router.delete("/:id", deleteJobDescription);
 
 export default router;
