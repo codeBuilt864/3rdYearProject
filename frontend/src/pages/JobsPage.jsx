@@ -128,7 +128,7 @@ function JobsPage() {
       {/* Page header */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-8 pb-4">
         <h1 className="text-3xl md:text-4xl font-black text-white mb-1">Job Search</h1>
-        <p className="text-white/50 text-sm">Jobs from Adzuna and ITPro.lk in one place</p>
+        <p className="text-white/50 text-sm">Jobs from Findwork and ITPro.lk in one place</p>
       </div>
 
       {/* Search bar */}
@@ -188,12 +188,7 @@ function JobsPage() {
           ) : (
             <>
               <span className="text-white font-semibold">{jobs.length}</span> jobs found
-              {data?.sources && (
-                <span className="ml-2 text-white/30 text-xs">
-                  {!data.sources.adzunaOk && "· Adzuna unavailable"}
-                  {!data.sources.itproOk && "· ITPro.lk unavailable"}
-                </span>
-              )}
+
             </>
           )}
         </p>
