@@ -50,6 +50,19 @@ export async function getJobDescriptionById(req, res) {
   }
 }
 
+// DELETE /api/job-descriptions/:id
+export async function deleteJobDescription(req, res) {
+  try {
+    const clerkUserId = req.auth().userId;
+    const jobInfo = await JobInfo.findOneAndDelete({ _id: req.params.id, clerkUserId });
+    if (!jobInfo) return res.status(404).json({ message: "Job info not found" });
+    res.json({ message: "Deleted" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+}
+
 // PUT /api/job-descriptions/:id
 export async function updateJobDescription(req, res) {
   try {
