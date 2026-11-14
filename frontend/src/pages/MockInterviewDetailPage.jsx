@@ -7,7 +7,6 @@ import MarkdownRenderer from "../components/MarkdownRenderer";
 import axiosInstance from "../lib/axios";
 import { condenseChatMessages } from "../lib/condenseChatMessages";
 import toast from "react-hot-toast";
-import { HumeClient } from "hume";
 
 function formatDateTime(dateStr) {
   return new Date(dateStr).toLocaleString("en-GB", {
@@ -36,13 +35,11 @@ function MockInterviewDetailPage() {
         );
         setInterview(data.interview);
 
-        // Fetch chat messages from backend (which calls Hume)
-        if (data.interview.humeChatId) {
-          const msgsRes = await axiosInstance.get(
-            `/api/mock-interview/interviews/${interviewId}/messages`
-          );
-          setCondensedMessages(condenseChatMessages(msgsRes.data.messages));
-        }
+        // Transcripts are stored with the interview in MongoDB.
+        const msgsRes = await axiosInstance.get(
+          `/api/mock-interview/interviews/${interviewId}/messages`
+        );
+        setCondensedMessages(condenseChatMessages(msgsRes.data.messages));
       } catch (err) {
         console.error(err);
         toast.error("Failed to load interview");
@@ -57,14 +54,13 @@ function MockInterviewDetailPage() {
     setGeneratingFeedback(true);
     try {
       const { data } = await axiosInstance.post(
-        `/api/mock-interview/interviews/${interviewId}/feedback`,
-        { userName: interview?.jobInfoId?.name ?? "Candidate" }
+        `/api/mock-interview/interviews/${interviewId}/feedback`
       );
       setInterview((prev) => ({ ...prev, feedback: data.feedback }));
       setShowFeedback(true);
     } catch (err) {
       console.error(err);
-      toast.error("Failed to generate feedback");
+      toast.error(err.response?.data?.message || "Failed to generate feedback");
     } finally {
       setGeneratingFeedback(false);
     }
@@ -125,6 +121,9 @@ function MockInterviewDetailPage() {
           messages={condensedMessages}
           className="max-w-3xl"
         />
+        {interview?.humeChatId && !condensedMessages.length && (
+          <p className="text-white/50 text-sm">This older interview's transcript was stored by Hume and is not available locally. Any saved feedback is still available.</p>
+        )}
       </div>
 
       {/* Feedback overlay dialog */}
