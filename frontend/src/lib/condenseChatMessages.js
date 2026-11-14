@@ -20,6 +20,9 @@ export function condenseChatMessages(messages) {
 }
 
 function getJsonMessageData(message) {
+  if (message.role === "user" || message.role === "assistant") {
+    return { isUser: message.role === "user", content: message.content };
+  }
   if (message.type !== "user_message" && message.type !== "assistant_message") return null;
   return {
     isUser: message.type === "user_message",

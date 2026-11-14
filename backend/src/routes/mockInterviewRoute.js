@@ -1,7 +1,6 @@
 import express from "express";
 import { requireAuth } from "@clerk/express";
 import {
-  getHumeToken,
   createInterview,
   updateInterview,
   getInterviewsByJobInfo,
@@ -13,8 +12,6 @@ import {
 const router = express.Router();
 
 router.use(requireAuth());
-
-router.get("/token", getHumeToken);
 
 router.post("/interviews", createInterview);
 router.patch("/interviews/:id", updateInterview);

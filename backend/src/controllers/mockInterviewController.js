@@ -1,4 +1,3 @@
-import { fetchAccessToken, HumeClient } from "hume";
 import { generateText } from "ai";
 import { createGoogleGenerativeAI } from "@ai-sdk/google";
 import { ENV } from "../lib/env.js";
@@ -7,30 +6,20 @@ import MockInterview from "../models/MockInterview.js";
 
 const google = createGoogleGenerativeAI({ apiKey: ENV.GEMINI_API_KEY });
 
-// GET /api/mock-interview/token
-export async function getHumeToken(req, res) {
-  try {
-    const accessToken = await fetchAccessToken({
-      apiKey: ENV.HUME_API_KEY,
-      secretKey: ENV.HUME_SECRET_KEY,
-    });
-    res.json({ accessToken });
-  } catch (error) {
-    console.error("Error fetching Hume token:", error.message);
-    res.status(500).json({ message: "Failed to get access token" });
-  }
-}
-
 // POST /api/mock-interview/interviews
 export async function createInterview(req, res) {
   try {
     const clerkUserId = req.auth().userId;
-    const { jobInfoId } = req.body;
+    const { jobInfoId, candidateName } = req.body;
+
+    if (candidateName !== undefined && (typeof candidateName !== "string" || candidateName.length > 200)) {
+      return res.status(400).json({ message: "Invalid candidate name" });
+    }
 
     const jobInfo = await JobInfo.findOne({ _id: jobInfoId, clerkUserId });
     if (!jobInfo) return res.status(404).json({ message: "Job info not found" });
 
-    const interview = await MockInterview.create({ jobInfoId });
+    const interview = await MockInterview.create({ jobInfoId, candidateName: candidateName?.trim() || "Candidate" });
     res.status(201).json({ interview });
   } catch (error) {
     console.error("Error creating interview:", error.message);
@@ -43,21 +32,51 @@ export async function updateInterview(req, res) {
   try {
     const clerkUserId = req.auth().userId;
     const { id } = req.params;
-    const { humeChatId, duration } = req.body;
+    const { vapiCallId, duration, transcript } = req.body;
 
     const interview = await MockInterview.findById(id).populate("jobInfoId");
     if (!interview) return res.status(404).json({ message: "Interview not found" });
-    if (interview.jobInfoId.clerkUserId !== clerkUserId) {
+    if (interview.jobInfoId?.clerkUserId !== clerkUserId) {
       return res.status(403).json({ message: "Unauthorized" });
     }
 
-    if (humeChatId !== undefined) interview.humeChatId = humeChatId;
+    if (vapiCallId !== undefined && (typeof vapiCallId !== "string" || !vapiCallId.trim() || vapiCallId.length > 100)) {
+      return res.status(400).json({ message: "Invalid call ID" });
+    }
+    if (interview.vapiCallId && vapiCallId !== undefined && interview.vapiCallId !== vapiCallId) {
+      return res.status(409).json({ message: "Interview is already linked to a different call" });
+    }
+    if (duration !== undefined && (typeof duration !== "string" || !/^\d{2,}:\d{2}:\d{2}$/.test(duration))) {
+      return res.status(400).json({ message: "Invalid duration" });
+    }
+    if (transcript !== undefined) {
+      if (!Array.isArray(transcript) || transcript.length > 2000 || transcript.some((message) =>
+        !message || !["user", "assistant"].includes(message.role) ||
+        typeof message.content !== "string" || !message.content.trim() || message.content.length > 20000 ||
+        !Number.isFinite(message.timestamp) || message.timestamp < 0
+      )) {
+        return res.status(400).json({ message: "Invalid transcript" });
+      }
+      // Snapshots are append-only; a delayed save must never erase newer turns.
+      const existing = interview.transcript || [];
+      if (transcript.length < existing.length || existing.some((message, index) =>
+        message.role !== transcript[index]?.role || message.content !== transcript[index]?.content ||
+        message.timestamp !== transcript[index]?.timestamp
+      )) {
+        return res.status(409).json({ message: "Transcript cannot overwrite saved turns" });
+      }
+      interview.transcript = transcript.map(({ role, content, timestamp }) => ({ role, content, timestamp }));
+    }
+    if (vapiCallId !== undefined) interview.vapiCallId = vapiCallId;
     if (duration !== undefined) interview.duration = duration;
     await interview.save();
 
     res.json({ interview });
   } catch (error) {
     console.error("Error updating interview:", error.message);
+    if (error.name === "VersionError") {
+      return res.status(409).json({ message: "Interview changed while saving; retry the latest transcript" });
+    }
     res.status(500).json({ message: "Internal Server Error" });
   }
 }
@@ -73,7 +92,7 @@ export async function getInterviewsByJobInfo(req, res) {
 
     const interviews = await MockInterview.find({
       jobInfoId,
-      humeChatId: { $ne: null },
+      $or: [{ vapiCallId: { $ne: null } }, { humeChatId: { $ne: null } }, { "transcript.0": { $exists: true } }],
     }).sort({ updatedAt: -1 });
 
     res.json({ interviews });
@@ -91,7 +110,7 @@ export async function getInterviewById(req, res) {
 
     const interview = await MockInterview.findById(id).populate("jobInfoId");
     if (!interview) return res.status(404).json({ message: "Interview not found" });
-    if (interview.jobInfoId.clerkUserId !== clerkUserId) {
+    if (interview.jobInfoId?.clerkUserId !== clerkUserId) {
       return res.status(403).json({ message: "Unauthorized" });
     }
 
@@ -110,24 +129,10 @@ export async function getInterviewMessages(req, res) {
 
     const interview = await MockInterview.findById(id).populate("jobInfoId");
     if (!interview) return res.status(404).json({ message: "Interview not found" });
-    if (interview.jobInfoId.clerkUserId !== clerkUserId) {
+    if (interview.jobInfoId?.clerkUserId !== clerkUserId) {
       return res.status(403).json({ message: "Unauthorized" });
     }
-    if (!interview.humeChatId) {
-      return res.json({ messages: [] });
-    }
-
-    const client = new HumeClient({ apiKey: ENV.HUME_API_KEY });
-    const allChatEvents = [];
-    const chatEventsIterator = await client.empathicVoice.chats.listChatEvents(
-      interview.humeChatId,
-      { pageNumber: 0, pageSize: 100 }
-    );
-    for await (const chatEvent of chatEventsIterator) {
-      allChatEvents.push(chatEvent);
-    }
-
-    res.json({ messages: allChatEvents });
+    res.json({ messages: interview.transcript || [] });
   } catch (error) {
     console.error("Error fetching interview messages:", error.message);
     res.status(500).json({ message: "Internal Server Error" });
@@ -139,38 +144,22 @@ export async function generateFeedback(req, res) {
   try {
     const clerkUserId = req.auth().userId;
     const { id } = req.params;
-    const { userName } = req.body;
 
     const interview = await MockInterview.findById(id).populate("jobInfoId");
     if (!interview) return res.status(404).json({ message: "Interview not found" });
-    if (interview.jobInfoId.clerkUserId !== clerkUserId) {
+    if (interview.jobInfoId?.clerkUserId !== clerkUserId) {
       return res.status(403).json({ message: "Unauthorized" });
     }
-    if (!interview.humeChatId) {
-      return res.status(400).json({ message: "Interview has not been completed yet" });
+    if (interview.feedback) return res.json({ feedback: interview.feedback });
+    if (!interview.transcript?.some((message) => message.role === "user")) {
+      return res.status(400).json({ message: "No candidate transcript is available for feedback" });
     }
 
-    const client = new HumeClient({ apiKey: ENV.HUME_API_KEY });
-    const allChatEvents = [];
-    const chatEventsIterator = await client.empathicVoice.chats.listChatEvents(
-      interview.humeChatId,
-      { pageNumber: 0, pageSize: 100 }
-    );
-    for await (const chatEvent of chatEventsIterator) {
-      allChatEvents.push(chatEvent);
-    }
-
-    const formattedMessages = allChatEvents
-      .map((message) => {
-        if (message.type !== "USER_MESSAGE" && message.type !== "AGENT_MESSAGE") return null;
-        if (message.messageText == null) return null;
-        return {
-          speaker: message.type === "USER_MESSAGE" ? "interviewee" : "interviewer",
-          text: message.messageText,
-          emotionFeatures: message.role === "USER" ? message.emotionFeatures : undefined,
-        };
-      })
-      .filter(Boolean);
+    const formattedMessages = interview.transcript.map((message) => ({
+      speaker: message.role === "user" ? "interviewee" : "interviewer",
+      text: message.content,
+      timestamp: message.timestamp,
+    }));
 
     const jobInfo = interview.jobInfoId;
 
@@ -185,7 +174,7 @@ export async function generateFeedback(req, res) {
 
 Additional Context:
 
-Interviewee's name: ${userName}
+Interviewee's name: ${interview.candidateName || "Candidate"}
 Job title: ${jobInfo.title || "Not Specified"}
 Job description: ${jobInfo.description}
 Job Experience level: ${jobInfo.experienceLevel}
@@ -196,7 +185,7 @@ Transcript JSON Format:
 
 speaker: "interviewee" or "interviewer"
 text: "The actual spoken text of the message"
-emotionFeatures: "An object of emotional features where the key is the emotion and the value is the intensity (0-1). This is only provided for interviewee messages."
+timestamp: "Approximate seconds elapsed when a final transcript segment was received; this is not precise speech timing. No audio or emotion measurements are provided."
 
 ---
 
@@ -213,16 +202,16 @@ Feedback Categories:
    - Did they use structured and appropriate language for this job and experience level?
 
 2. **Confidence and Emotional State**
-   - Based on the provided emotional cues and speech content, how confident did the interviewee appear?
-   - Highlight any nervous or hesitant moments that may have affected the impression they gave.
+   - Assess confidence only from the wording and structure of the answers.
+   - Do not infer vocal tone, nervousness, or emotions from text alone; state this limitation.
 
 3. **Response Quality**
    - Did the interviewee respond with relevant, well-reasoned answers aligned with the job requirements?
    - Were answers appropriately scoped for their experience level (e.g., detail depth, use of examples)?
 
 4. **Pacing and Timing**
-   - Analyze delays between interviewer questions and interviewee responses.
-   - Point out long or unnatural pauses that may indicate uncertainty or unpreparedness.
+   - Discuss answer length and conversational flow using the transcript.
+   - Timestamps reflect transcript delivery, not speech boundaries. Do not claim precise pauses or response latency.
 
 5. **Engagement and Interaction**
    - Did the interviewee show curiosity or ask thoughtful questions?
@@ -241,7 +230,7 @@ Feedback Categories:
 
 Additional Notes:
 
-- Reference specific moments from the transcript, including quotes and timestamps where useful. Do not return specific emotional features in your response.
+- Reference specific moments from the transcript, including quotes and approximate timestamps where useful. Do not invent audio or emotional observations.
 - Tailor your analysis and feedback to the specific job description and experience level provided.
 - Be clear, constructive, and actionable. The goal is to help the interviewee grow.
 - Do not include an h1 title or information about the job description in your response, just include the feedback.
