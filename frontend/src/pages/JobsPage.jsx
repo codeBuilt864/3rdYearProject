@@ -44,7 +44,15 @@ function JobsPage() {
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
   const [savedJobIds, setSavedJobIds] = useState(new Set());
   const [savedJobs, setSavedJobs] = useState([]);
-  const [view, setView] = useState("all"); // "all" | "saved"
+  const view = searchParams.get("view") === "saved" ? "saved" : "all";
+  function setView(nextView) {
+    setSearchParams((previous) => {
+      const next = new URLSearchParams(previous);
+      if (nextView === "saved") next.set("view", "saved");
+      else next.delete("view");
+      return next;
+    });
+  }
 
   useEffect(() => {
     axiosInstance.get("/api/saved-jobs")
@@ -100,7 +108,7 @@ function JobsPage() {
       { replace: true }
     );
     setVisibleCount(PAGE_SIZE);
-  }, [debouncedSearch]);
+  }, [debouncedSearch, setSearchParams]);
 
   function updateFilter(key, value) {
     setSearchParams(
@@ -143,6 +151,7 @@ function JobsPage() {
   const { data, isLoading, isError, refetch, isFetching } = useQuery({
     queryKey: ["jobs", queryParams],
     queryFn: () => fetchJobs(queryParams),
+    enabled: view === "all",
     staleTime: 5 * 60 * 1000,
     retry: 1,
   });

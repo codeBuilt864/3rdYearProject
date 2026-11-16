@@ -3,9 +3,12 @@ import { useUser } from "@clerk/clerk-react";
 
 import Navbar from "../components/Navbar";
 import TemplatesPreview from "../components/TemplatesPreview";
+import DashboardOverview from "../components/DashboardOverview";
+import useDashboard from "../hooks/useDashboard";
 
 function DashboardPage() {
   const navigate = useNavigate();
+  const dashboardQuery = useDashboard();
   const { user } = useUser();
   const firstName = user?.firstName || user?.fullName || "there";
 
@@ -80,59 +83,7 @@ function DashboardPage() {
               </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <div className="rounded-2xl p-5 bg-gradient-to-br from-white/3 to-white/2 border border-white/6">
-                <h4 className="text-sm text-white/80">Resume Score</h4>
-                <div className="mt-3 flex items-end justify-between">
-                  <div>
-                    <p className="text-3xl font-bold text-white">72</p>
-                    <p className="text-xs text-white/60">ATS & format</p>
-                  </div>
-                  <button
-                    onClick={() => navigate("/resumeanalyze")}
-                    className="px-3 py-1 bg-white/6 rounded text-white text-sm"
-                  >
-                    Improve
-                  </button>
-                </div>
-              </div>
-
-              <div className="rounded-2xl p-5 bg-gradient-to-br from-white/3 to-white/2 border border-white/6">
-                <h4 className="text-sm text-white/80">Interview Readiness</h4>
-                <div className="mt-3 flex items-end justify-between">
-                  <div>
-                    <p className="text-3xl font-bold text-white">Moderate</p>
-                    <p className="text-xs text-white/60">
-                      Behavioral & technical
-                    </p>
-                  </div>
-                  <button
-                    onClick={() => navigate("/mockinterview")}
-                    className="px-3 py-1 bg-white/6 rounded text-white text-sm"
-                  >
-                    Practice
-                  </button>
-                </div>
-              </div>
-
-              <div className="rounded-2xl p-5 bg-gradient-to-br from-white/3 to-white/2 border border-white/6">
-                <h4 className="text-sm text-white/80">Skill Gaps</h4>
-                <div className="mt-3 flex items-end justify-between">
-                  <div>
-                    <p className="text-3xl font-bold text-white">3</p>
-                    <p className="text-xs text-white/60">
-                      Suggested learning topics
-                    </p>
-                  </div>
-                  <button
-                    onClick={() => navigate("/strategies")}
-                    className="px-3 py-1 bg-white/6 rounded text-white text-sm"
-                  >
-                    Learn
-                  </button>
-                </div>
-              </div>
-          </div>
+          <DashboardOverview query={dashboardQuery} />
 
           <div className="bg-gradient-to-br from-[#7B5CFF]/8 to-[#A66CFF]/8 rounded-2xl p-6 border border-[#7B5CFF]/20">
             <h2 className="text-2xl font-extrabold text-white mb-4">
