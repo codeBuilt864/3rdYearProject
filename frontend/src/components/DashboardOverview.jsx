@@ -1,4 +1,5 @@
 import { Link } from "react-router";
+import DashboardQuickActions from "./DashboardQuickActions";
 import { ArrowRightIcon, BookmarkIcon, BriefcaseIcon, FileTextIcon, HistoryIcon, LightbulbIcon, MessageSquareIcon, RefreshCwIcon, TargetIcon } from "lucide-react";
 
 const panel = "bg-gradient-to-br from-[#7B5CFF]/8 to-[#A66CFF]/8 rounded-2xl p-6 border border-[#7B5CFF]/20";
@@ -27,12 +28,16 @@ export default function DashboardOverview({ query }) {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {[0, 1, 2, 3].map((key) => <div key={key} className="h-32 rounded-2xl border border-white/10 bg-white/5 animate-pulse" />)}
       </div>
+      <DashboardQuickActions />
     </div>
   );
   if (!data) return (
-    <div role="alert" className={panel}>
-      <p className="text-white mb-3">We couldn&apos;t load your dashboard. Your preparation data is still saved.</p>
-      <button onClick={() => refetch()} className={linkStyle}>Try again</button>
+    <div className="space-y-6">
+      <div role="alert" className={panel}>
+        <p className="text-white mb-3">We couldn&apos;t load your dashboard. Your preparation data is still saved.</p>
+        <button onClick={() => refetch()} className={linkStyle}>Try again</button>
+      </div>
+      <DashboardQuickActions />
     </div>
   );
 
@@ -65,6 +70,8 @@ export default function DashboardOverview({ query }) {
           );
         })}
       </div>
+
+      <DashboardQuickActions />
 
       <Section title="Next steps" icon={TargetIcon}>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
