@@ -106,7 +106,7 @@ Refer to the candidate as "you". Be constructive and actionable.`;
     );
 
     const { object } = await generateObject({
-      model: google("gemini-2.5-flash"),
+      model: google(ENV.GEMINI_MODEL),
       schema: aiAnalyzeSchema,
       system: systemPrompt,
       messages: [
