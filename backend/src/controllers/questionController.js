@@ -34,7 +34,7 @@ export async function generateQuestion(req, res) {
     pipeDataStreamToResponse(res, {
       execute: async (writer) => {
         const result = streamText({
-          model: google("gemini-2.5-flash"),
+          model: google(ENV.GEMINI_MODEL),
           messages: [
             ...previousMessages,
             { role: "user", content: difficulty },
@@ -94,7 +94,7 @@ export async function generateFeedback(req, res) {
     pipeDataStreamToResponse(res, {
       execute: (writer) => {
         const result = streamText({
-          model: google("gemini-2.5-flash"),
+          model: google(ENV.GEMINI_MODEL),
           prompt: answer.trim(),
           system: `You are an expert technical interviewer. Your job is to evaluate the candidate's answer to a technical interview question.
 

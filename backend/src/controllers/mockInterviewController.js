@@ -164,7 +164,7 @@ export async function generateFeedback(req, res) {
     const jobInfo = interview.jobInfoId;
 
     const { text } = await generateText({
-      model: google("gemini-2.5-flash"),
+      model: google(ENV.GEMINI_MODEL),
       prompt: JSON.stringify(formattedMessages),
       maxSteps: 10,
       experimental_continueSteps: true,

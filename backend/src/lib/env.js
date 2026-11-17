@@ -14,5 +14,6 @@ export const ENV = {
   STREAM_API_SECRET: process.env.STREAM_API_SECRET,
   OPENAI_API_KEY: process.env.OPENAI_API_KEY,
   GEMINI_API_KEY: process.env.GEMINI_API_KEY,
+  GEMINI_MODEL: process.env.GEMINI_MODEL?.trim() || "gemini-3.8-flash",
   FINDWORK_API_KEY: process.env.FINDWORK_API_KEY,
 };
