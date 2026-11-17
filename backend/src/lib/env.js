@@ -1,0 +1,19 @@
+import dotenv from "dotenv";
+
+dotenv.config({ quiet: true });
+
+export const ENV = {
+  PORT: process.env.PORT,
+  DB_URL: process.env.DB_URL,
+  NODE_ENV: process.env.NODE_ENV,
+  CLIENT_URL: process.env.CLIENT_URL,
+  INNGEST_EVENT_KEY: process.env.INNGEST_EVENT_KEY,
+  INNGEST_SIGNING_KEY: process.env.INNGEST_SIGNING_KEY,
+  CLERK_WEBHOOK_SECRET: process.env.CLERK_WEBHOOK_SECRET,
+  STREAM_API_KEY: process.env.STREAM_API_KEY,
+  STREAM_API_SECRET: process.env.STREAM_API_SECRET,
+  OPENAI_API_KEY: process.env.OPENAI_API_KEY,
+  GEMINI_API_KEY: process.env.GEMINI_API_KEY,
+  GEMINI_MODEL: process.env.GEMINI_MODEL?.trim() || "gemini-3.8-flash",
+  FINDWORK_API_KEY: process.env.FINDWORK_API_KEY,
+};
